@@ -17,18 +17,18 @@ geometry.createMorphGeometry(); // apply the methode ( here without parameters: 
 Include 	<script src="THREEf.js"></script> 
 
 -----------------------------------------------------------------------------------------------------------------
-Example:
+**Example:**
 
-geometry = new THREE.Geometry();
+`geometry = new THREE.Geometry();
 geometry.createMorphGeometry = THREEf.createMorphGeometry;
 geometry.createMorphGeometry({
-    height: 80,
-    heightSegments: 80,
-    rCircHeight: function ( u, v, t ) { return 1.01 + Math.cos( 25.2 * v ) * Math.sin( 0.2 * t ) },
-    centerX: function ( v, t ) { return 0.75*Math.sin( 9 * v + 0.2 * t)},
-    centerZ: function ( v, t ) { return 0.45*Math.cos( 9 * v + 0.2 * t)},
-    materialCover: function ( u, v, t) { return Math.floor( t ) % 20 < 5 ? 0 : 0.8 }		
+   height: 80,
+   heightSegments: 80,
+   rCircHeight: function ( u, v, t ) { return 1.01 + Math.cos( 25.2 * v ) * Math.sin( 0.2 * t ) },
+   centerX: function ( v, t ) { return 0.75*Math.sin( 9 * v + 0.2 * t)},
+   centerZ: function ( v, t ) { return 0.45*Math.cos( 9 * v + 0.2 * t)},
+   materialCover: function ( u, v, t) { return Math.floor( t ) % 20 < 5 ? 0 : 0.8 }		
 });	
-// Material: min. 9 materials in multi material array!  index: 0.8 * 10 = 8
+// Material: min. 9 materials in multi material array!  index: 0.8 * 10 = 8`
 
 Parameters briefly explained in THREEf.js
