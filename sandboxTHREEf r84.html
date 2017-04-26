@@ -1,0 +1,514 @@
+<!doctype html>
+<!-- ........ sandbox THREEf ( rev 8.4.10 BETA ) ........
+/**
+ * @author hofk / http://sandbox.threejs.hofk.de/
+*/
+-->
+<html>
+<head>
+	<title> THREEf geometries </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>	
+		input[type="number"] {width:50px} 
+		textarea {width:150px;} 
+	</style>
+</head>
+<body bgcolor="#cccccc ">
+
+	<script src="three.min.84.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="THREEx.WindowResize.js"></script>	
+	<script src="THREEf.js"></script>
+	
+  <div style="position: absolute; top: 10px; left: 15px; text-align: left;">
+	 show 							<input type="checkbox" id="vertexIndexes"  > indexes - size 
+									<input type="number"   id="indexSize"	value="1.0" step="0.1" >
+									<input type="checkbox" id="floor">  floor  --- 
+									<button type="button"  id="show"> apply now / show mesh </button> 
+									<input type="radio" name="style" id="complete" checked="checked"> complete
+									<input type="radio" name="style" id="cover"	> cover
+									<input type="radio" name="style" id="map"	> map 
+	... ( with firefox )
+	<br />		
+	radius  ..... height / radius ..... height segments	...  
+		<a href="examplesTHREEf.html" title="examples THREEf" target="_blank"> basic examples / source and form library</a><br />
+									<input type="number"	id="radius"			value="16" >  
+									<input type="number"	id="height"			value="100">
+									<input type="number"	id="radiusSegments"	value="10" > 
+									<input type="number"	id="heightSegments"	value="10" > 
+									<input type="checkbox"	id="circOpen"> circular open <br />
+	FUNCTIONS: function ( ) ...						<!--  example button  -->
+									<button type="button" onclick="infoShow()">examples</button><br />
+	- 1 - radius circular height (u,v,t)<br /><input type="text" id="rCircHeight"	size="36" value="1"><br />
+	- 0 - center X (v,t)				<br /><input type="text" id="centerX"	 	size="36" value="0"><br />
+	- v - center Y (v,t)		<button type="button" id="useCP" onclick="buttonPoints()">use center points x, y, z</button>			
+										<br /><input type="text" id="centerY"	 	size="36" value="v"><br />
+	- 0 - center Z (v,t)				<br /><input type="text" id="centerZ"	 	size="36" value="0"><br />
+	- 0 - unroll cover (v,t)			<br /><input type="text" id="unrollCover"	size="36" value="0"><br />
+	- 0 - waffle deep (u,v,t) 				  <input type="checkbox" id="waffled" > 
+	waffled grid 						<br /><input type="text" id="waffleDeep"	size="36" value="0"><br />
+	- 0 - move X (u,v,t)				<br /><input type="text" id="moveX"	 		size="36" value="0"><br />
+	- 0 - move Y (u,v,t)				<br /><input type="text" id="moveY"	 		size="36" value="0"><br />
+	- 0 - move Z (u,v,t)				<br /><input type="text" id="moveZ"	 		size="36" value="0"><br />
+	- 1 - end circular angle (v,t)		<br /><input type="text" id="endCircAngle"	size="36" value="1"><br />
+	- 0 - start circular angle (v,t)	<br /><input type="text" id="startCircAngle"size="36" value="0"><br />
+	- u - scale circular angle (u,t)	<br /><input type="text" id="scaleCircAngle"size="36" value="u"><br />
+	- 1 - top segment height (u,t)		<br /><input type="text" id="topHeight"		size="36" value="1"><br />
+	- 0 - bottom	segment height (u,t)<br /><input type="text" id="bottomHeight"	size="36" value="0"><br /> 
+	- v - scale segment height (v,t)<br /><input type="text" id="scaleHeight"		size="36" value="v"><br /> 
+	
+	- 0.1 - material top (u,t)			<input type="checkbox"	id="withTop" > with top <br />
+										<input type="text" 		id="materialTop"	size="36" value="0.1"><br />
+	- 0.1 - material bottom (u,t)		<input type="checkbox"	id="withBottom"> with bottom <br />
+										<input type="text"		id="materialBottom"	size="36" value="0.1"><br />
+	- 0.1 - material cover (u,v,t)<br /><input type="text"		id="materialCover"	size="36" value="0.1">
+	
+	
+	<button type="button" onclick="buttonMultiMaterial()"> materials, describe fixed  </button> <br />
+	material:							<input type="checkbox"	id="doubleSide"	> double side
+										<input type="checkbox"	id="flatshading"> flat shading
+										<input type="checkbox"	id="wireframe"	> wireframe
+										<input type="color"		id="color" 	value="#880088"	> color 1
+	
+	<br />
+	<div id="infoBox" style="width: 450px; padding: 6px; background-color: #feffe6; border: 2px solid #66cc33">
+		<p style="text-align: center; "> <button type="button" onclick="infoClose()"> close </button> </p>	
+		<small> copy functions, note u, v, t and material limit: </small> <br />
+		0.2+0.8*Math.cos(10*u*t)<br />	
+		5*Math.sin(u)*Math.cos(u) <br />	
+		(u-1)*(u-1)*Math.cos(0.2*t) <br />
+		0.75+(u-0.5)*(u-0.5) <br />	
+		3*(u-0.5)*(u-0.5)+0.25 <br />
+		1-1.8*(u-0.5)*(u-0.5)<br />
+		Math.sin(6.28*u) + 0.1 <br />
+		0.5*Math.sin(3.14*(u+ 0.15)) <br />
+		Math.atan(1/ u) <br />	
+		2*Math.sqrt(u-u*u) <br />
+		0.5*(1+Math.sqrt(u)) <br />		
+		1 / (4*u+1) <br />	
+		Math.exp(-3*u) <br />
+		Math.log(u)+1 <br />
+		(u<=0.125 || (u>0.375 && u<0.625 ) || u>0.875 ) ?  0.5 : 1.0<br />
+		u < v ? 0.1+0.4*(1+Math.sin(0.5*t+u)) : 0.4 <br />
+		<br />
+		
+	</div>
+	
+	<div id="centerBox" style="width: 525px; height: 525px; padding: 5px; background-color: #feffe6; border: 2px solid #66cc33">	
+		<p style="text-align: center; ">
+			<button type="button" onclick="pointsClose()" > close </button><br/>
+		</p>	
+			<input type="checkbox"	id="useCenterPoints" > use the array of center points <br />
+		Note! <br/>
+		replaces heightSegments, scale segment height(), centerX(), centerY(), centerZ() <br />
+		<br />
+		array of arrays of coordinates [ [ x0, y0, z0 ], ..  ] values normally 0 .. 1 <br />		
+		<textarea id="centerPoints" rows="20" colums="40" >[
+		
+[ 0, 0, 0 ], [ 0.2, 1, 0 ]
+
+]</textarea>	
+	</div>	
+	
+	<div id="materialBox" style="width: 600px; height: 530px; padding: 5px; background-color: #feffe6; border: 2px solid #66cc33">		
+		If material ..(u,v,t) becomes greater then 1.099.., the script will crash. <br />
+		Describe fixed materials:<br />
+		(face rows , separeted) faces from left top to right bottom: digit 0 .. 9  <br />
+		<textarea id="fixedMaterial" rows="10" > 
+		</textarea> <--> (don't enter)<br />
+		MATERIALS: material index 0 .. 9, grey 10 ( function result * 10 ) <br/>
+		0 <img src = "transparent.png"	width="100" height="100"/>
+		1 <img src = "choosecolor.png"	width="100" height="100"/>
+		2 <img src = "red.png" 			width="100" height="100"/>
+		3 <img src = "green.png" 		width="100" height="100"/>
+		4 <img src = "blue.png" 		width="100" height="100"/><br />
+		5 <img src = "yellow.png" 		width="100" height="100"/>
+		6 <img src = "magenta.png" 		width="100" height="100"/>
+		7 <img src = "cyan.png" 		width="100" height="100"/>
+		8 <img src = "uvgrid01.png" 	width="100" height="100"/>
+		9 <img src = "waterlily.png" 	width="100" height="100"/><br />
+		
+		<p style="text-align: center; ">
+			<button type="button" onclick="materialClose()" > close </button><br/>
+		</p>	
+	</div>	
+  </div>
+</body>
+<script>
+
+'use strict';
+var clock ; 
+var time;
+var controls;
+var scene;  
+var camera; 
+var renderer; 
+var container;
+var light1, light2;
+var floorGeometrie;
+var floorTexture;
+var floorMaterial;
+var floor;
+var vertexNumbersHelper;
+var rCircHeightExpr;
+var centerXExpr;
+var centerYExpr;
+var centerZExpr;
+var unrollCoverExpr;
+var waffleDeepExpr;
+var moveXExpr;
+var moveYExpr;
+var moveZExpr;
+var endCircAngleExpr;
+var startCircAngleExpr;
+var scaleCircAngleExpr;
+var topHeightExpr;
+var bottomHeightExpr;
+var scaleHeightExpr;
+var materialTopExpr;
+var materialBottomExpr;
+var materialCoverExpr;
+var fixedMaterialArray = [];
+var centerPointsArray = [];
+var useCenterPoints;
+var color;
+var wireframe;
+var flatshading;
+var shading;
+var doubleside;
+var side;
+var uvTex;		
+var waterlilyTex;
+var inp = {};
+var p = {};  	
+var geometry; 
+var mesh; 
+var showGeo = false;
+
+var info = document.getElementById( "infoBox" );
+info.style.display = "none";
+info.style.position = "absolute";
+info.style.zIndex = 997;
+info.style.left = "250px";
+info.style.top  = "64px";
+function infoShow() { info.style.display = "" }
+function infoClose() { info.style.display = "none" }
+
+var centerPoints = document.getElementById( "centerBox" );
+centerPoints.style.display = "none";
+centerPoints.style.position = "absolute";
+centerPoints.style.zIndex = 998;
+centerPoints.style.left = "250px";
+centerPoints.style.top  = "120px";
+function buttonPoints() { centerPoints.style.display = "" }
+function pointsClose() { centerPoints.style.display = "none" }
+
+var chooseMultiMaterial = document.getElementById( "materialBox" );
+chooseMultiMaterial.style.display = "none"; 
+chooseMultiMaterial.style.position = "absolute";
+chooseMultiMaterial.style.zIndex = 999;
+chooseMultiMaterial.style.left = "250px";
+chooseMultiMaterial.style.top  = "380px";
+function buttonMultiMaterial() { chooseMultiMaterial.style.display = "" }
+function materialClose() { chooseMultiMaterial.style.display = "none" }
+
+document.getElementById( "doubleSide" ).checked = true;
+document.getElementById( "floor" ).checked = true;
+
+var complete	= document.getElementById( "complete" );
+var cover		= document.getElementById( "cover" );
+var map			= document.getElementById( "map" );
+
+useCenterPoints = document.getElementById( "useCenterPoints" );
+document.getElementById( "fixedMaterial" ).value = "....................,....................,....................,....................,....................,....................,....................,....................,....................,....................";
+
+var vertexIndexes;  
+
+function init() {
+
+		scene  = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000 );
+		scene.add( camera );
+		camera.position.set(  0, 80, 250 );	
+		
+		renderer = new THREE.WebGLRenderer( { antialias: true } );	
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setClearColor( 0xeeeeee);
+		
+		container = document.createElement( 'div' );
+		document.body.appendChild( container );
+		container.appendChild( renderer.domElement );
+		
+		THREEx.WindowResize( renderer, camera );
+		controls = new THREE.OrbitControls( camera, renderer.domElement );	
+		
+		light1 = new THREE.PointLight();
+		light1.position.set( 150, 400, 700 );
+		scene.add( light1 ); 
+		
+		light2 = new THREE.PointLight();
+		light2.position.set( -100, -800, -800 );
+		scene.add( light2 ); 
+			
+		floorGeometrie = new THREE.PlaneGeometry( 200, 200, 20, 20 );
+		floorTexture = new THREE.TextureLoader().load( "checkerboard.png" );
+		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+		floorTexture.repeat.set( 5, 5 );
+		floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, transparent: true, opacity: 0.2 } );
+		floor = new THREE.Mesh(floorGeometrie, floorMaterial);  
+		floor.rotation.x = -1.57;
+
+		scene.add( floor );
+		
+		uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );
+		waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );
+		
+		clock  			= new THREE.Clock( true );	
+		
+		document.getElementById( "show" ).onclick = showNewMesh;
+		
+}
+ 		 
+function showNewMesh() {	
+
+	if ( mesh ) {
+		scene.remove(mesh);
+		geometry.dispose();
+	}	
+	
+	inp.radius =			parseInt(document.getElementById( "radius" ).value);
+	inp.height =			parseInt(document.getElementById( "height" ).value);
+	inp.radiusSegments =	parseInt(document.getElementById( "radiusSegments" ).value);
+	inp.heightSegments =	parseInt(document.getElementById( "heightSegments" ).value);
+	inp.circOpen =					 document.getElementById( "circOpen"  ).checked;
+	inp.withTop =					 document.getElementById( "withTop"   ).checked;
+	inp.withBottom =				 document.getElementById( "withBottom").checked;
+	inp.waffled =					 document.getElementById( "waffled"   ).checked;
+	inp.style = complete.checked ? "complete" : cover.checked ? "cover" : "map";
+	rCircHeightExpr =				 document.getElementById( "rCircHeight" ).value; 
+	centerXExpr =					 document.getElementById( "centerX"	   ).value;
+	centerYExpr =					 document.getElementById( "centerY"	   ).value;
+	centerZExpr =					 document.getElementById( "centerZ"	   ).value;
+	unrollCoverExpr =				 document.getElementById( "unrollCover" ).value;
+	waffleDeepExpr =				 document.getElementById( "waffleDeep"  ).value;
+	moveXExpr =					 	 document.getElementById( "moveX"		).value;
+	moveYExpr =					 	 document.getElementById( "moveY"		).value;
+	moveZExpr =					 	 document.getElementById( "moveZ"		).value;
+	endCircAngleExpr =				 document.getElementById( "endCircAngle"   ).value;
+	startCircAngleExpr =			 document.getElementById( "startCircAngle" ).value;
+	scaleCircAngleExpr =			 document.getElementById( "scaleCircAngle" ).value;
+	topHeightExpr =					 document.getElementById( "topHeight"    ).value;
+	bottomHeightExpr =				 document.getElementById( "bottomHeight" ).value;
+	scaleHeightExpr =				 document.getElementById( "scaleHeight"  ).value;
+	materialTopExpr = 				 document.getElementById( "materialTop"    ).value; 
+	materialBottomExpr = 			 document.getElementById( "materialBottom" ).value;
+	materialCoverExpr = 			 document.getElementById( "materialCover"  ).value;
+	inp.fixedMaterial =				 document.getElementById( "fixedMaterial"  ).value;
+	inp.centerPoints =				 document.getElementById( "centerPoints"   ).value;
+		
+	fixedMaterialArray = inp.fixedMaterial.split( ',' );
+	
+	
+	centerPointsArray =  eval( inp.centerPoints ); 
+	
+	// parameters p
+	p = {
+	
+		radius:			inp.radius,			// reference radius
+		height:			inp.height,			// reference height
+		radiusSegments:	inp.radiusSegments,	// radius segments (number)
+		heightSegments:	inp.heightSegments,	// height segments (number)
+		circOpen:		inp.circOpen,		// circular connected or disconnected
+		withTop:		inp.withTop,		// with a top
+		withBottom:		inp.withBottom,		// with a bottom
+		waffled:		inp.waffled,		// four faces / segment, with center vertex
+		style:			inp.style,			// map, cover, complete
+		
+			// u, v, t functions forms the geometry
+			
+		rCircHeight:	rCircHeightFunc,	// radius depending on segment location
+		centerX:		centerXFunc,		// centerpoint x by height
+		centerY:		centerYFunc,		// centerpoint y by height
+		centerZ:		centerZFunc,		// centerpoint z by height
+		unrollCover:	unrollCoverFunc,	// unroll to x = -radius  
+		waffleDeep:		waffleDeepFunc,		// radius difference center vertex
+		moveX:			moveXFunc,			// move factor x
+		moveY:			moveYFunc,			// move factor y
+		moveZ:			moveZFunc,			// move factor z
+		endCircAngle:	endCircAngleFunc,	// end circular angle
+		startCircAngle:	startCircAngleFunc,	// start circular angle
+		scaleCircAngle:	scaleCircAngleFunc,	// scale circular angle
+		topHeight:		topHeightFunc,		// top segments height
+		bottomHeight:	bottomHeightFunc,	// bottom segments height
+		scaleHeight:	scaleHeightFunc,	// scale segments height
+		materialTop:	materialTopFunc,	// material top
+		materialBottom:	materialBottomFunc,	// material bottom
+		materialCover:	materialCoverFunc,	// material cover 
+		
+			// string array (string of digits) seperated with a ,
+			
+		fixedMaterial:	fixedMaterialArray,	// fixed material index, overrides materialCover
+		
+			// array of center points, replaces heightSegments, scale segment height(), centerX(), centerY(), centerZ()
+			
+		centerPoints:	useCenterPoints.checked ? centerPointsArray : undefined
+		
+	}	
+	
+	// create the morph geometry
+	geometry = new THREE.Geometry();							// * base class geometry object for costum
+	geometry.createMorphGeometry = THREEf.createMorphGeometry;  // ** add the method from THREEf.js
+    geometry.createMorphGeometry( p );			 				// *** apply method with the parameters
+	
+	geometry.computeVertexNormals();
+	
+	// material
+	color =			document.getElementById( "color" ).value; // color of material 1
+	wireframe =		document.getElementById( "wireframe" ).checked;
+	flatshading =	document.getElementById( "flatshading" ).checked;
+	shading =		flatshading ? THREE.FlatShading : THREE.SmoothShadig;
+	doubleSide =	document.getElementById( "doubleSide" ).checked;
+	side =			doubleSide ? THREE.DoubleSide : THREE.FrontSide;
+		
+	var specular =  0x333333;
+	
+	var materials = [
+	
+		new THREE.MeshBasicMaterial( {
+			opacity: 0.15,	transparent: true, 	
+			side: side, wireframe: wireframe } ),					//  0 transparent
+			
+		new THREE.MeshPhongMaterial( {
+			color: color, emissive: color, specular: specular,
+			side: side, wireframe: wireframe, shading: shading } ),	//  1 choose color
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xff0000, emissive: 0xff0000, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  2 red
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x00ff00, emissive: 0x00ff00, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  3 green
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x0000ff, emissive: 0x0000ff, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  4 blue
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xffff00, emissive: 0xffff00, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  5 yellow
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xff00ff, emissive: 0xff00ff, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  6 mgenta
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x00ffff, emissive: 0x00ffff, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } ),	//  7 cyan
+			
+		new THREE.MeshBasicMaterial( {
+			map: uvTex,			
+			side: side, wireframe: wireframe, shading: shading } ),	//  8 uv grid
+			
+		new THREE.MeshBasicMaterial( {
+			map: waterlilyTex,	
+			side: side, wireframe: wireframe, shading: shading } ),	//  9 photo
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x444444, emissive: 0x444444, specular: specular, 
+			side: side, wireframe: wireframe, shading: shading } )	// 10 grey
+	
+	];
+	
+	var material = new THREE.MultiMaterial( materials );
+	
+	
+	// Please note regarding function materialCover, fixedMaterialArray and  THREE.MultiMaterial( materials ):
+	// If the multimaterial array contains fewer THREE. .. materials
+	// than the functional result * 10 or the highest digit of fixedMaterialArray the script will crash.
+	
+	mesh = new THREE.Mesh( geometry, material );	
+	scene.add( mesh );
+	
+	floor.visible = document.getElementById( "floor" ).checked;
+	vertexIndexes = document.getElementById( "vertexIndexes" ).checked;	
+	
+	if ( vertexIndexes ) {
+	
+		// from THREEf.js    parameters:  mesh, scale, color 	
+		vertexNumbersHelper = new THREEf.vertexNumbersHelper( mesh, document.getElementById( "indexSize" ).value, 0x111199 ); 
+		
+	}
+	
+	showGeo = true;	 // start animation
+
+}
+
+//........................  functions from form  .................................
+
+var rCircHeightFunc =		function ( u, v, t)	{ return eval( rCircHeightExpr ) }
+var centerXFunc =			function ( v, t)	{ return eval( centerXExpr ) }
+var centerYFunc =			function ( v, t)	{ return eval( centerYExpr ) }
+var centerZFunc =			function ( v, t)	{ return eval( centerZExpr ) }
+var unrollCoverFunc =		function ( v, t)	{ return eval( unrollCoverExpr ) }
+var waffleDeepFunc =		function ( u, v, t)	{ return eval( waffleDeepExpr ) }
+var moveXFunc =				function ( u, v, t)	{ return eval( moveXExpr ) }
+var moveYFunc =				function ( u, v, t)	{ return eval( moveYExpr ) }
+var moveZFunc =				function ( u, v, t)	{ return eval( moveZExpr ) }
+var endCircAngleFunc =		function ( v, t)	{ return eval( endCircAngleExpr ) }
+var startCircAngleFunc =	function ( v, t)	{ return eval( startCircAngleExpr ) }
+var scaleCircAngleFunc =	function ( u, t)	{ return eval( scaleCircAngleExpr ) }
+var topHeightFunc =			function ( u, t)	{ return eval( topHeightExpr ) }
+var bottomHeightFunc =		function ( u, t)	{ return eval( bottomHeightExpr ) }
+var scaleHeightFunc =		function ( v, t)	{ return eval( scaleHeightExpr ) }
+var	materialTopFunc =		function ( u, t)	{ return eval( materialTopExpr ) }
+var	materialBottomFunc =	function ( u, t)	{ return eval( materialBottomExpr ) }
+var	materialCoverFunc =		function ( u, v, t)	{ return eval( materialCoverExpr ) }
+
+// .................................................................................
+
+function animate() {
+
+	
+	if ( useCenterPoints.checked ) {
+	
+		document.getElementById( "useCP" ).innerHTML = "center points in use";
+		
+	} else {
+	
+		document.getElementById( "useCP" ).innerHTML = "use center points x, y, z";
+		
+	}
+	
+
+	requestAnimationFrame( animate );
+			
+	if (showGeo) {
+	
+		time = clock.getElapsedTime();
+	
+		geometry.morphVertices( time ); // from THREEf.js	
+		geometry.morphFaces( time );    // from THREEf.js
+		geometry.computeVertexNormals(); // required for smooth shading
+		
+		if ( vertexIndexes ) {
+		
+			vertexNumbersHelper.update();
+			
+		}	
+		
+	}
+	
+	renderer.render( scene, camera );
+	controls.update();
+	
+}
+// .................
+
+init();
+animate(); 
+
+</script>
+</html>
+
