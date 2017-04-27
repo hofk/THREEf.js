@@ -1,4 +1,4 @@
-// THREEf.js ( rev 84.10 BETA )
+// THREEf.js ( rev 85.0 BETA )
 
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
@@ -984,7 +984,7 @@ function morphFaces( time ) {
 	
 	if ( g.style !== "complete" ) { g.withBottom = false; g.withTop = false; g.circOpen = true; }
 	
-	g.groupsNeedUpdate = true; // to change materialIndex for MultiMaterial
+	g.groupsNeedUpdate = true; // to change materialIndex for multi material
 	
 	if ( !g.materialCoverDefault || !g.fixedMaterialDefault ) {
 		
