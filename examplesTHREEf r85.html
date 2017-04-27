@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--   *** examples THREEf (rev 8.4.10) ***
+<!--   *** examples THREEf (rev 85.0) ***
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
 */
@@ -14,7 +14,7 @@
  <a href="formLibrary.pdf" title="webgl three.js" target="_blank"> form library.pdf ( in progress ) </a>
 
 </body>
-	<script src="three.min.84.js"></script>
+	<script src="three.min.85.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script src="THREEx.WindowResize.js"></script>
 	<script src="THREEf.js"></script>
@@ -68,7 +68,7 @@ var materials = [																			// material index:
 	new THREE.MeshPhongMaterial( { color: 0x444444, emissive: 0x333333, side: side	} )		// 10 grey
 ];
 
-var material = new THREE.MultiMaterial( materials );  
+// var material = new THREE.MultiMaterial( materials );  // deprecated in r85 (changed to array)
 
 // geometry
 
@@ -182,40 +182,40 @@ geometry08.computeVertexNormals(); // required for smooth shading
 
 // meshes
 
-var mesh01 = new THREE.Mesh( geometry01, material );
+var mesh01 = new THREE.Mesh( geometry01, materials );
 scene.add( mesh01 );
 mesh01.position.set( 0, 0, 200 );
 
 var vertexNumbersHelper01 = new THREEf.vertexNumbersHelper( mesh01, 3, 0xff00ff ); // from THREEf.js
 vertexNumbersHelper01.update();
  
-var mesh02 = new THREE.Mesh( geometry02, material );
+var mesh02 = new THREE.Mesh( geometry02, materials );
 scene.add( mesh02 );
 mesh02.position.set( -200, 0, 0 );
 
-var mesh03 = new THREE.Mesh( geometry03, material );
+var mesh03 = new THREE.Mesh( geometry03, materials );
 scene.add( mesh03 );
 mesh03.rotation.y = 2.2;
 mesh03.position.set( 0, 0, -200 );
 
-var mesh04 = new THREE.Mesh( geometry04, material );
+var mesh04 = new THREE.Mesh( geometry04, materials );
 scene.add( mesh04 );
 mesh04.position.set( 200, 0, 0 );
 
-var mesh05 = new THREE.Mesh( geometry05, material );
+var mesh05 = new THREE.Mesh( geometry05, materials );
 scene.add( mesh05 );
 mesh05.rotation.y = -1.25;
 //mesh05.position.set( 0, 0, 0 );
 
-var mesh06 = new THREE.Mesh( geometry06, material );
+var mesh06 = new THREE.Mesh( geometry06, materials );
 scene.add( mesh06 );
 //mesh06.position.set( 0, 0, 0 );
 
-var mesh07 = new THREE.Mesh( geometry07, material );
+var mesh07 = new THREE.Mesh( geometry07, materials );
 scene.add( mesh07 );
 mesh07.position.set( -200, 0, -200 );
 
-var mesh08 = new THREE.Mesh( geometry08, material );
+var mesh08 = new THREE.Mesh( geometry08, materials );
 scene.add( mesh08 );
 mesh08.position.set( -200, 0, 200 );
 animate();
