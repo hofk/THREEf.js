@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- ........ sandbox THREEf ( rev 8.4.10 BETA ) ........
+<!-- ........ sandbox THREEf ( rev 85.0 BETA ) ........
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
 */
@@ -16,7 +16,7 @@
 </head>
 <body bgcolor="#cccccc ">
 
-	<script src="three.min.84.js"></script>
+	<script src="three.min.85.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script src="THREEx.WindowResize.js"></script>	
 	<script src="THREEf.js"></script>
@@ -357,9 +357,9 @@ function showNewMesh() {
 	}	
 	
 	// create the morph geometry
-	geometry = new THREE.Geometry();							// * base class geometry object for costum
-	geometry.createMorphGeometry = THREEf.createMorphGeometry;  // ** add the method from THREEf.js
-    geometry.createMorphGeometry( p );			 				// *** apply method with the parameters
+	geometry = new THREE.Geometry();								// * base class geometry object for costum
+	geometry.createMorphGeometry = THREEf.createMorphGeometry;  	// ** add the method from THREEf.js
+    	geometry.createMorphGeometry( p );			 				// *** apply method with the parameters
 	
 	geometry.computeVertexNormals();
 	
@@ -421,14 +421,14 @@ function showNewMesh() {
 	
 	];
 	
-	var material = new THREE.MultiMaterial( materials );
+	// var material = new THREE.MultiMaterial( materials ); // deprecated in r85 (changed to array)
 	
 	
-	// Please note regarding function materialCover, fixedMaterialArray and  THREE.MultiMaterial( materials ):
+	// Please note regarding function materialCover, fixedMaterialArray and   materials:
 	// If the multimaterial array contains fewer THREE. .. materials
 	// than the functional result * 10 or the highest digit of fixedMaterialArray the script will crash.
 	
-	mesh = new THREE.Mesh( geometry, material );	
+	mesh = new THREE.Mesh( geometry, materials );	
 	scene.add( mesh );
 	
 	floor.visible = document.getElementById( "floor" ).checked;
