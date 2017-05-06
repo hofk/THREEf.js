@@ -40,6 +40,8 @@ geometry.createMorphGeometry({
 });	// Material: min. 9 materials in multi material array!  index: 0.8 * 10 = 8
 
 ```
+ View the live version of formLibrary.html: https://rawgit.com/hofk/THREEf.js/dev/formLibrary.html
+
 Parameters briefly explained in THREEf.js:
 
 ```javascript
