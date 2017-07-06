@@ -1,5 +1,5 @@
 # THREEf.js
-THREE.js addon, to produce almost infinite many time-varying Geometries and BufferGeometries with functions
+THREE.js addon, to produce almost infinite many time-varying geometries with functions
 
 //
   @author hofk / http://sandbox.threejs.hofk.de/
@@ -7,17 +7,13 @@ THREE.js addon, to produce almost infinite many time-varying Geometries and Buff
 
  #####  * Inspired by https://threejs.org/examples/js/ParametricGeometries.js ( @author zz85 )*
 
-Produce almost infinite many time-varying Geometries or BufferGeometries with with only 10 properties, 18 functions and 2 arrays:
+Produce almost infinite many time-varying geometrieswith with only 9 properties, 18 functions and 2 arrays:
 
 ```javascript
 
 geometry = new THREE.Geometry();    // base class geometry object from THREE.js
-// or 
-geometry = new THREE.BufferGeometry();    // base class buffer-geometry object from THREE.js
 
 geometry.createMorphGeometry = THREEf.createMorphGeometry;    // insert the methode from THREEf.js
-
-// for non-indexed BufferGeometry set parameter  indexed: false, 
 
 geometry.createMorphGeometry();    // apply the methode ( here without parameters: all default )
 
@@ -28,13 +24,12 @@ Include: 	<script src="THREEf.js"></script>
 **Example:**
 
 ```javascript
-geometry = new THREE.BufferGeometry();
+geometry = new THREE.Geometry();
 
 geometry.createMorphGeometry = THREEf.createMorphGeometry;
 
 geometry.createMorphGeometry({
 
-   indexed: false, // default is true
    height: 80,
    heightSegments: 80,
    rCircHeight: function ( u, v, t ) { return 1.01 + Math.cos( 25.2 * v ) * Math.sin( 0.2 * t ) },
@@ -57,7 +52,6 @@ p = {
 
 		// simple properties
 	
-	indexed,		// indexed or non indexed BufferGeometry
 	radius,			// reference radius, multiplier for functions
 	height,			// reference height, multiplier for functions
 	radiusSegments,	// radius segments (number)
