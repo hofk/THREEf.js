@@ -10,7 +10,9 @@
 	<meta charset="utf-8" />
 </head>
 <body> 	
-	examples from left: Geometry, indexed & non-indexed BufferGeometry  -  source code ctrl + U </body>
+	examples from left: Geometry, indexed & non-indexed BufferGeometry  -  source code ctrl + U  -
+	 <a href="examplesTHREEf r86.html" title="examples" target="_blank"> further examples  </a>
+</body>
 	<script src="three.min.86.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script src="THREEx.WindowResize.js"></script>
@@ -129,12 +131,10 @@ var indexedBufferGeometry = new THREE.BufferGeometry();
 indexedBufferGeometry.createMorphGeometry = THREEf.createMorphGeometry;
 indexedBufferGeometry.createMorphGeometry( parameters );
 
-
 var nonIndexedBufferGeometry = new THREE.BufferGeometry();
 nonIndexedBufferGeometry.createMorphGeometry = THREEf.createMorphGeometry;
 parameters.indexed = false;
 nonIndexedBufferGeometry.createMorphGeometry( parameters );
-
 
 // meshes
 var mesh1 = new THREE.Mesh( geometry, materials );
