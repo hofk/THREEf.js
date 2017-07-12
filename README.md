@@ -22,7 +22,7 @@ geometry.createMorphGeometry = THREEf.createMorphGeometry;    // insert the meth
 geometry.createMorphGeometry();    // apply the methode ( here without parameters: all default )
 
 mesh = new THREE.Mesh( geometry, materials ); // create a material array: materials
-scene.add( mesh09 );
+scene.add( mesh );
 
 mesh.add( geometry.quadLine ); //  only if used propertie quadLine:  add the quad line
 
