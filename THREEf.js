@@ -1,4 +1,4 @@
-// THREEf.js ( rev 86.1  BETA )
+// THREEf.js ( rev 86.2  BETA )
 
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
@@ -27,10 +27,12 @@ p = {
 	height,			// reference height, multiplier for functions
 	radiusSegments,	// radius segments (number)
 	heightSegments,	// height segments (number)
-	circOpen,		// circular connected or disconnected
+	circOpen,		// circular connected or disconnected (see quadLine)
 	withTop,		// with a top
 	withBottom,		// with a bottom
 	waffled,		// four faces / segment, with center vertex
+	quadLine,		// separate quad line, only aviable when circular open
+	quadColor,		// color of quad line
 	style,			// 'map', 'cover', 'complete'
 			
 		// functions: u,v and result normally 0 .. 1, otherwise specific / interesting results!
@@ -91,10 +93,13 @@ p = {
 	g.height =			p.height			!== undefined ? p.height			: 100;
 	g.radiusSegments =	p.radiusSegments	!== undefined ? p.radiusSegments	: 10;
 	g.heightSegments =	p.heightSegments	!== undefined ? p.heightSegments	: 10; 
-	g.circOpen =		p.circOpen			!== undefined ? p.circOpen			: false;
+	g.circOpen =		p.circOpen			!== undefined ? p.circOpen			: false; // is automatic set true if quadLine
 	g.withTop =			p.withTop			!== undefined ? p.withTop			: false;
 	g.withBottom =		p.withBottom		!== undefined ? p.withBottom		: false;
 	g.waffled =			p.waffled			!== undefined ? p.waffled			: false;
+	g.quadLine = 		p.quadLine			!== undefined ? p.quadLine			: false;
+	if ( g.quadLine ) g.circOpen = true; 				// quad line is only aviable when circular open
+	g.quadColor = 		p.quadColor			!== undefined ? p.quadColor			: 0x000000;
 	g.style =			p.style				!== undefined ? p.style				: "complete";
 	g.rCircHeight =		p.rCircHeight		!== undefined ? p.rCircHeight		: function ( u, v, t ) { return 1 };
 	g.centerX =			p.centerX			!== undefined ? p.centerX			: function ( v, t ) { return 0 };
@@ -158,7 +163,7 @@ p = {
 }
 
 function create() {
-
+	
 	g = this;
 	
 	if ( g.style !== "complete" ) { g.withBottom = false; g.withTop = false; g.circOpen = true; }
@@ -292,6 +297,19 @@ function create() {
 	
 		}
 		
+		if ( g.quadLine ) {
+			
+			g.lineGeometry = new THREE.Geometry();  // quad line geometry 
+			g.quadLine = new THREE.Line( g.lineGeometry, new THREE.LineBasicMaterial( { color: g.quadColor } ) );
+			
+			for ( var i = 0; i <  2 * hss * rss; i ++ ) { 
+				
+				g.lineGeometry.vertices.push( new THREE.Vector3( 0, 0, 0 ) );
+				
+			}
+			
+		}
+		
 		if ( !g.waffled ) {
 		
 			for ( var j = 0; j < circFaceCount; j ++ ) {
@@ -302,7 +320,7 @@ function create() {
 				j1 = hvc * ( j + 1 );
 				
 				for ( var i = 0; i < hs; i ++ ) {
-				
+					
 					// 2 faces / segment,  3 vertex indices
 					a =  j0 + i;
 					b1 = j1 + i;		// right-bottom
@@ -321,7 +339,7 @@ function create() {
 				
 			}
 			
-		}		
+		}
 		
 		if ( g.waffled ) {
 		
@@ -559,16 +577,26 @@ function create() {
 		g.addAttribute( 'normal', new THREE.BufferAttribute( g.normals, 3 ).setDynamic( true ) );
 		g.addAttribute( 'uv', new THREE.BufferAttribute( g.uvs, 2 ) );
 		
+		if ( g.quadLine ) {
+			
+			g.lineGeometry = new THREE.BufferGeometry();
+			g.quadLine = new THREE.Line( g.lineGeometry, new THREE.LineBasicMaterial( { color: g.quadColor } ) );
+			
+			g.linePositions = new Float32Array(  2 * hss * rss * 3 );
+			g.lineGeometry.addAttribute( 'position', new THREE.BufferAttribute( g.linePositions, 3 ) );
+			
+		}	
+		
 		g.vertexFaces = [];		// needed to calculate the normals
 		
 		if ( !g.waffled ) {
 	
 			for ( var j = 0; j < rs; j ++ ) {
-			
+				
 				uvCoordinatesX();
 				
 				for ( var i = 0; i < hs; i ++ ) {
-				
+					
 					// 2 faces / segment,  3 vertex indices
 					a =  hvc * j + i;
 					b1 = hvc * ( j + 1 ) + i;		// right-bottom
@@ -593,7 +621,7 @@ function create() {
 			// faces to vertex
 			
 			for ( var j = 0; j < rss; j ++ ) {
-			
+				
 				for ( var i = 0; i < hss; i ++ ) {
 					
 					//vIdx =  hvc * j + i;	// vertex index
@@ -611,7 +639,7 @@ function create() {
 						fIdx = ( ( rs - 1 ) * hs  + i ) * 2;
 						
 						if ( i < hs ) {
-						
+							
 							vFace.push( fIdx * 3 );
 							if ( i === 0 ) vFace.push( fIdx * 3 ); // face double (equal number left and right) 
 							
@@ -1271,6 +1299,16 @@ function create() {
 		g.addAttribute( 'position', new THREE.BufferAttribute( g.positions, 3 ).setDynamic( true ) );
 		g.addAttribute( 'normal', new THREE.BufferAttribute( g.normals, 3 ).setDynamic( true ) );
 		g.addAttribute( 'uv', new THREE.BufferAttribute( g.uvs, 2 ) ); 
+		
+		if ( g.quadLine ) {
+			
+			g.lineGeometry = new THREE.BufferGeometry();
+			g.quadLine = new THREE.Line( g.lineGeometry, new THREE.LineBasicMaterial( { color: g.quadColor } ) );
+			
+			g.linePositions = new Float32Array(  2 * hss * rss * 3 );
+			g.lineGeometry.addAttribute( 'position', new THREE.BufferAttribute( g.linePositions, 3 ) );
+			
+		}	
 		
 		g.vertexFaces = [];		// needed to calculate the normals
 		g.vertexPositions = [];
@@ -1975,6 +2013,12 @@ function morphVertices( time ) {
 	var waffleVidx; 		// waffle vertex index
 	var pi = Math.PI;
 	var topOffset = 0;
+	// quad line
+	var sign;				// for vertical line up / down
+	var vlst;				// vertical line start indices
+	var hlIdx;				// horizontal line index
+	var hld0; 				// horizontal line difference even
+	var hld1; 				// horizontal line difference odd
 	
 	function xyzCalculation() {
 		
@@ -2292,23 +2336,67 @@ function morphVertices( time ) {
 		
 		g.verticesNeedUpdate  = true;
 		
+		if ( !g.quadLine ) {
 		
-		for ( var j = 0; j < circVertexCount; j ++ ) {
-			
-			nj = j / rs;
-			
-			for ( var i = 0; i < hss; i ++ ) {
+			for ( var j = 0; j < circVertexCount; j ++ ) {
 				
-				ni   = i / hs;
-				ni01 = ( i + 0.1 ) / hs;
+				nj = j / rs;
 				
-				xyzCalculation();
-				
-				g.vertices[ hvc * j + i ].set( x , y , z );
+				for ( var i = 0; i < hss; i ++ ) {
+					
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
+					
+					xyzCalculation();
+					
+					g.vertices[ hvc * j + i ].set( x , y , z );
+					
+				}
 				
 			}
 			
-		}
+		} else {
+		
+			sign = 1;	// quad line vertical line up / down
+			
+			for ( var j = 0; j < circVertexCount; j ++ ) {
+			
+				nj = j / rs;
+				
+				// quad line
+				
+				hlIdx = hss * rss - j - 1; // horizontal line index ( start )
+				
+				hld0 = 2 * rs - 2 * j + 1; // horizontal line vertices difference
+				hld1 = 2 * j + 1;
+				
+				vlst = ( rss + j ) * hss + ( j % 2 === 0 ? 0 : hs ) ;	// vertical line start
+				
+				for ( var i = 0; i < hss; i ++ ) {
+					
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
+					
+					xyzCalculation();
+					
+					g.vertices[ hvc * j + i ].set( x , y , z );	// set geometry vertices
+					
+					// quad line
+					
+					g.lineGeometry.vertices[ vlst + sign * i ].set( x , y, z );	// vertical line 
+					g.lineGeometry.vertices[ hlIdx ].set( x, y, z );			// horizontal line
+					
+					hlIdx -= i % 2 === 0 ? hld0 : hld1; // horizontal line ( index difference )
+					
+				}
+				
+				sign = -sign;	// alternately up / down
+				
+			}
+			
+			g.lineGeometry.verticesNeedUpdate  = true;
+			
+		}	 
 		
 		if ( g.waffled ) {
 			
@@ -2416,63 +2504,161 @@ function morphVertices( time ) {
 		g.attributes.position.needsUpdate = true;
 		g.attributes.normal.needsUpdate = true;
 		
-		for ( var j = 0; j < circVertexCount; j ++ ) {
-			
-			nj = j / rs;
-			
-			for ( var i = 0; i < hss; i ++ ) {
+		if ( !g.quadLine ) {
+		
+			for ( var j = 0; j < circVertexCount; j ++ ) {
 				
-				ni   = i / hs;
+				nj = j / rs;
 				
-				vIdx =  hvc * j + i;	// vertex index
-				
-				ni01 = ( i + 0.1 ) / hs;
-				
-				xyzCalculation();
-				
-				xyzSet(); // set vertex position
-				
-				if (j === 0  && !g.circOpen ) {
+				for ( var i = 0; i < hss; i ++ ) {
 					
-					vIdx =  hvc * rs + i;	// vertex index
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
 					
-					xyzSet(); // connect face / positions on the far right are identical
+					vIdx =  hvc * j + i;	// vertex index
 					
-				}
-				
-				if ( i === 0 && g.withBottom ){
-					
-					topOffset = 1 + rss;
-					
-					vIdx = hvc * rs + hss + 1 + j;
+					xyzCalculation();
 					
 					xyzSet(); // set vertex position
 					
 					if (j === 0  && !g.circOpen ) {
 						
-						vIdx += rs; 
+						vIdx =  hvc * rs + i;	// vertex index
 						
 						xyzSet(); // connect face / positions on the far right are identical
 						
 					}
 					
-				}
-				
-				if ( i === hs && g.withTop){
-					
-					vIdx = hvc * rs + hss + topOffset + 1 + j;
-					
-					xyzSet(); // set vertex position
-					
-					if (j === 0  && !g.circOpen ) {
+					if ( i === 0 && g.withBottom ){
 						
-						vIdx += rs; 
+						topOffset = 1 + rss;
 						
-						xyzSet(); // connect face / positions on the far right are identical
+						vIdx = hvc * rs + hss + 1 + j;
 						
-					}
+						xyzSet(); // set vertex position
+						
+						if (j === 0  && !g.circOpen ) {
 							
+							vIdx += rs; 
+							
+							xyzSet(); // connect face / positions on the far right are identical
+							
+						}
+						
+					}
+					
+					if ( i === hs && g.withTop){
+						
+						vIdx = hvc * rs + hss + topOffset + 1 + j;
+						
+						xyzSet(); // set vertex position
+						
+						if (j === 0  && !g.circOpen ) {
+							
+							vIdx += rs; 
+							
+							xyzSet(); // connect face / positions on the far right are identical
+							
+						}
+								
+					}
+					
 				}
+				
+			}
+			
+		} else {
+		
+			g.lineGeometry.attributes.position.needsUpdate = true;
+			
+			sign = 1;	// quad line vertical line up / down
+			
+			for ( var j = 0; j < circVertexCount; j ++ ) {
+				
+				nj = j / rs;
+				
+				// quad line
+				
+				hlIdx = hss * rss - j - 1; // horizontal line index ( start )
+				
+				hld0 = 2 * rs - 2 * j + 1; // horizontal line vertices difference
+				hld1 = 2 * j + 1;
+				
+				vlst = ( rss + j ) * hss + ( j % 2 === 0 ? 0 : hs ) ;	// vertical line start
+				
+				for ( var i = 0; i < hss; i ++ ) {
+					
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
+					
+					vIdx =  hvc * j + i;	// vertex index
+										
+					xyzCalculation();
+					
+					xyzSet(); // set vertex position
+					
+					// quad line
+						
+					posIdx = ( vlst + sign * i ) * 3;	// vertical line 
+					
+					g.linePositions[ posIdx ] = x;
+					g.linePositions[ posIdx + 1 ] = y;
+					g.linePositions[ posIdx + 2 ] = z;
+											
+					posIdx = hlIdx * 3;					// horizontal line
+					
+					g.linePositions[ posIdx ] = x;
+					g.linePositions[ posIdx + 1 ] = y;
+					g.linePositions[ posIdx + 2 ] = z;
+						
+						
+					hlIdx -= i % 2 === 0 ? hld0 : hld1; // horizontal line ( index difference )	
+					
+					if (j === 0  && !g.circOpen ) {
+						
+						vIdx =  hvc * rs + i;	// vertex index
+						
+						xyzSet(); // connect face / positions on the far right are identical
+						
+					}
+					
+					if ( i === 0 && g.withBottom ){
+						
+						topOffset = 1 + rss;
+						
+						vIdx = hvc * rs + hss + 1 + j;
+						
+						xyzSet(); // set vertex position
+						
+						if (j === 0  && !g.circOpen ) {
+							
+							vIdx += rs; 
+							
+							xyzSet(); // connect face / positions on the far right are identical
+							
+						}
+						
+					}
+					
+					if ( i === hs && g.withTop){
+						
+						vIdx = hvc * rs + hss + topOffset + 1 + j;
+						
+						xyzSet(); // set vertex position
+						
+						if (j === 0  && !g.circOpen ) {
+							
+							vIdx += rs; 
+							
+							xyzSet(); // connect face / positions on the far right are identical
+							
+						}
+								
+					}
+					
+				}
+				
+				sign = -sign;	// alternately up / down
 				
 			}
 			
@@ -2729,26 +2915,89 @@ function morphVertices( time ) {
 		g.attributes.position.needsUpdate = true;
 		g.attributes.normal.needsUpdate = true;
 		
-		for ( var j = 0; j < circVertexCount; j ++ ) {
-			
-			nj = j / rs;
-			
-			for ( var i = 0; i < hss; i ++ ) {
+		if ( !g.quadLine ) { 
+		
+			for ( var j = 0; j < circVertexCount; j ++ ) {
 				
-				ni   = i / hs;
-				ni01 = ( i + 0.1 ) / hs;
+				nj = j / rs;
 				
-				xyzCalculation();
-				
-				vIdx =  hvc * j + i;	// vertex index
-				
-				for ( var p = 0; p < g.vertexPositions[ vIdx ].length; p ++) {
+				for ( var i = 0; i < hss; i ++ ) {
 					
-					g.positions[ g.vertexPositions[ vIdx ][ p ] ] = x;
-					g.positions[ g.vertexPositions[ vIdx ][ p ] + 1 ] = y;
-					g.positions[ g.vertexPositions[ vIdx ][ p ] + 2 ] = z;
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
+					
+					vIdx =  hvc * j + i;	// vertex index
+					
+					xyzCalculation();
+										
+					for ( var p = 0; p < g.vertexPositions[ vIdx ].length; p ++) {
+						
+						g.positions[ g.vertexPositions[ vIdx ][ p ] ] = x;
+						g.positions[ g.vertexPositions[ vIdx ][ p ] + 1 ] = y;
+						g.positions[ g.vertexPositions[ vIdx ][ p ] + 2 ] = z;
+						
+					}
 					
 				}
+				
+			}
+					
+		} else {
+			
+			g.lineGeometry.attributes.position.needsUpdate = true;
+			
+			sign = 1;	// quad line vertical line up / down
+			
+			for ( var j = 0; j < circVertexCount; j ++ ) {
+				
+				nj = j / rs;
+				
+				// quad line
+				
+				hlIdx = hss * rss - j - 1; // horizontal line index ( start )
+				
+				hld0 = 2 * rs - 2 * j + 1; // horizontal line vertices difference
+				hld1 = 2 * j + 1;
+				
+				vlst = ( rss + j ) * hss + ( j % 2 === 0 ? 0 : hs ) ;	// vertical line start
+				
+				for ( var i = 0; i < hss; i ++ ) {
+					
+					ni   = i / hs;
+					ni01 = ( i + 0.1 ) / hs;
+					
+					vIdx =  hvc * j + i;	// vertex index
+					
+					xyzCalculation();
+										
+					for ( var p = 0; p < g.vertexPositions[ vIdx ].length; p ++) {
+						
+						g.positions[ g.vertexPositions[ vIdx ][ p ] ] = x;
+						g.positions[ g.vertexPositions[ vIdx ][ p ] + 1 ] = y;
+						g.positions[ g.vertexPositions[ vIdx ][ p ] + 2 ] = z;
+						
+					}
+					
+					// quad line
+			
+					posIdx = ( vlst + sign * i ) * 3;	// vertical line 
+					
+					g.linePositions[ posIdx ] = x;
+					g.linePositions[ posIdx + 1 ] = y;
+					g.linePositions[ posIdx + 2 ] = z;
+											
+					posIdx = hlIdx * 3;					// horizontal line
+					
+					g.linePositions[ posIdx ] = x;
+					g.linePositions[ posIdx + 1 ] = y;
+					g.linePositions[ posIdx + 2 ] = z;
+						
+						
+					hlIdx -= i % 2 === 0 ? hld0 : hld1; // horizontal line ( index difference )	
+					
+				}
+				
+				sign = -sign;	// alternately up / down
 				
 			}
 			

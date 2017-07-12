@@ -14,7 +14,7 @@
  <a href="formLibrary.html" title="webgl three.js" target="_blank"> form library.html ( in progress ) </a>
 
 </body>
-	<script src="three.min.85.js"></script>
+	<script src="three.min.86.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script src="THREEx.WindowResize.js"></script>
 	<script src="THREEf.js"></script>
@@ -178,8 +178,23 @@ moveX:			function ( u, v, t ) { return  -Math.cos( 2 * Math.PI * u ) },
 topHeight:		function ( u, t ) { return   0.6 * ( 1.4 + Math.cos ( Math.sin( t ) * Math.sin( t ) * u ) ) },
 materialTop:	function ( u, t ) { return 0.2 },
 materialBottom:	function ( u, t ) { return 0.2 },	
-materialCover:	function ( u, v, t ) { return 0.2 },});	
+materialCover:	function ( u, v, t ) { return 0.2 },
 
+});	
+
+
+var geometry09 = new THREE.BufferGeometry();   //  --- Base class for building custom buffer geometries in THREE.js --- 
+geometry09.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry09.createMorphGeometry({
+	
+	quadLine: true,
+	quadColor: 0xff00ff,
+	style: 'cover',
+	materialCover: function ( u, v, t ) { return 0 },
+	rCircHeight: function ( u, v, t ) { return  Math.sin( t + 6.28 * u ) + Math.sin( t + 6.28 * v ) },	
+	
+});	
 
 // meshes
 
@@ -221,6 +236,15 @@ scene.add( mesh08 );
 mesh08.position.set( -200, 0, 200 );
 animate();
 
+var mesh09 = new THREE.Mesh( geometry09, materials );
+scene.add( mesh09 );
+
+mesh09.add( geometry09.quadLine ); // add the outline 
+
+mesh09.position.set( 100, 0, 200 );
+
+animate();
+
 //..................
 
 function animate() {
@@ -255,6 +279,9 @@ function animate() {
 	
 	geometry08.morphVertices( time );
 	//geometry08.morphFaces();			// no morph faces while animate
+	
+	geometry09.morphVertices( time );
+	//geometry09.morphFaces();			// no morph faces while animate
 	
 	renderer.render( scene, camera );
 	controls.update();

@@ -43,7 +43,8 @@
 									<input type="number"	id="radiusSegments"	value="10" > 
 									<input type="number"	id="heightSegments"	value="10" > 
 									<input type="checkbox"	id="circOpen"> circular open
-									<input type="checkbox"	id="vertexNormals"> show vertex normals .....
+									<input type="checkbox"	id="quadLine"> quad line
+									<input type="checkbox"	id="vertexNormals"> vertex normals .....
 									
 		<a href="basic examples.html" title="basic examples" target="_blank"> basic examples / source </a>
 			
@@ -80,6 +81,7 @@
 										<input type="checkbox"	id="flatshading"> flat shading
 										<input type="checkbox"	id="wireframe"	> wireframe
 										<input type="color"		id="color" 	value="#880088"	> color 1
+										<input type="color"		id="quadColor" 	value="#111111"	> quad color
 	
 	<br />
 	<div id="infoBox" style="width: 450px; padding: 6px; background-color: #feffe6; border: 2px solid #66cc33">
@@ -183,6 +185,7 @@ var fixedMaterialArray = [];
 var centerPointsArray = [];
 var useCenterPoints;
 var color;
+var quadcolor;
 var wireframe;
 var flatshading;
 var shading;
@@ -308,6 +311,8 @@ function showNewMesh() {
 	inp.withTop =					 document.getElementById( "withTop"   ).checked;
 	inp.withBottom =				 document.getElementById( "withBottom").checked;
 	inp.waffled =					 document.getElementById( "waffled"   ).checked;
+	inp.quadLine = 					 document.getElementById( "quadLine"   ).checked;
+	inp.quadColor =					 document.getElementById( "quadColor" ).value;
 	inp.style = complete.checked ? "complete" : cover.checked ? "cover" : "map";
 	rCircHeightExpr =				 document.getElementById( "rCircHeight" ).value; 
 	centerXExpr =					 document.getElementById( "centerX"	   ).value;
@@ -350,6 +355,8 @@ function showNewMesh() {
 		withTop:		inp.withTop,		// with a top
 		withBottom:		inp.withBottom,		// with a bottom
 		waffled:		inp.waffled,		// four faces / segment, with center vertex
+		quadLine:		inp.quadLine,		// quad line
+		quadColor:		inp.quadColor,		// color of quad
 		style:			inp.style,			// map, cover, complete
 		
 			// u, v, t functions forms the geometry
@@ -470,13 +477,24 @@ function showNewMesh() {
 	
 	// var material = new THREE.MultiMaterial( materials ); // deprecated in r85 (changed to array)
 	
+	if ( document.getElementById( "quadLine" ).checked ) {
 	
+		for ( var m = 1; m < 11; m ++) {
+		
+			materials[ m ].opacity = 0.8;
+			materials[ m ].transparent = true;
+			
+		}
+	
+	}
 	// Please note regarding function materialCover, fixedMaterialArray and   materials:
 	// If the multimaterial array contains fewer THREE. .. materials
 	// than the functional result * 10 or the highest digit of fixedMaterialArray the script will crash.
 	
 	mesh = new THREE.Mesh( geometry, materials );	
 	scene.add( mesh );
+	
+	if ( document.getElementById( "quadLine" ).checked ) mesh.add( geometry.quadLine ); // add the outline 
 	
 	floor.visible = document.getElementById( "floor" ).checked;
 	vertexIndexes = document.getElementById( "vertexIndexes" ).checked;	
@@ -499,7 +517,6 @@ function showNewMesh() {
 		scene.add( vertexNormalsHelper);
 	
 	}
-	
 	
 	showGeo = true;	 // start animation
 
@@ -529,7 +546,13 @@ var	materialCoverFunc =		function ( u, v, t)	{ return eval( materialCoverExpr ) 
 // .................................................................................
 
 function animate() {
-	
+
+	if ( document.getElementById( "quadLine" ).checked ) { 
+
+	document.getElementById( "circOpen" ).checked = true;
+	 
+	}
+
 	if ( useCenterPoints.checked ) {
 	
 		document.getElementById( "useCP" ).innerHTML = "center points in use";
