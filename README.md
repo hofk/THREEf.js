@@ -7,7 +7,7 @@ THREE.js addon, to produce almost infinite many time-varying Geometries and Buff
 
  #####  * Inspired by https://threejs.org/examples/js/ParametricGeometries.js ( @author zz85 )*
 
-Produce almost infinite many time-varying Geometries or BufferGeometries with only 10 properties, 18 functions and 2 arrays:
+Produce almost infinite many time-varying Geometries or BufferGeometries with only 12 properties, 18 functions and 2 arrays:
 
 ```javascript
 
@@ -20,6 +20,11 @@ geometry.createMorphGeometry = THREEf.createMorphGeometry;    // insert the meth
 // for non-indexed BufferGeometry set parameter  indexed: false, 
 
 geometry.createMorphGeometry();    // apply the methode ( here without parameters: all default )
+
+mesh = new THREE.Mesh( geometry, materials ); // create a material array: materials
+scene.add( mesh09 );
+
+mesh.add( geometry.quadLine ); //  only if used propertie quadLine:  add the quad line
 
 ```
 Include: 	<script src="THREEf.js"></script> 
@@ -66,6 +71,8 @@ p = {
 	withTop,		// with a top
 	withBottom,		// with a bottom
 	waffled,		// four faces / segment, with center vertex
+	quadLine,		// separate quad line, only aviable when circular open
+	quadColor,		// color of quad line
 	style,			// 'map', 'cover', 'complete'
 			
 		// functions: u,v and result normally 0 .. 1, otherwise specific / interesting results!
