@@ -142,16 +142,16 @@ document.images[29].width = "193";
 document.images[29].src = "img/0029_water_staircase.png";
 parameterList[29].value = "//0029 water staircase  @author hofk \n radius:	6,\n circOpen:	true,\n centerPoints:	[ [ 0, 0, 0 ], [ .1, .1, 0 ], [ .2, 0.01, 0 ], [ .3, .1, 0], [ .4, 0.01, 0 ], [ .5, 0.1, 0 ], [ .6, 0.01, 0 ], [ .7, 0.1, 0 ], [ .8, 0.01, 0 ], [ .9, 0.1, 0 ], [ 1, 0.0, 0 ] ],\n unrollCover:	function ( v, t ) { return 1.4 }";
 //__________________________________________________________
-document.images[29].width = "188";
-document.images[29].height = "238";
+document.images[30].width = "188";
+document.images[30].height = "238";
 document.images[30].src = "img/0030_yellow_quad.png";
 parameterList[30].value = "//0030_yellow_quad.png @author hofk \n  	radius: 40,\n	radiusSegments: 36,\n	withTop: true,	\n	rCircHeight: function ( u, v, t ) { 	\n		if ( u < 0.2 ){			\n			return 0.5 * Math.tan( 6.28 * u * v ); 			\n		} else 	if ( u >= 0.2  ) { \n			return 1.2 * Math.sin( 3.14 * u * v );		\n		} 	\n	},\n	materialCover:	function ( u, v, t ) { return 0.5 },\n	quadLine: true,\n	quadColor: 0x0000ff,\n	materialTop: function ( u, t ) { return 0.5 },\n\n //NOTE! use mesh.add( geometry.quadLine ); ";
-
-
 //__________________________________________________________
-
-document.images[31].src = "img/    .png";
-parameterList[31].value = "//0...Here is the right place for your example! \n ";
+document.images[31].src = "img/0031_quadLine _moved.png";
+parameterList[31].value = "//0031_quadLine _moved.png @author hofk \n  	quadLine: true,\n	rCircHeight: function ( u, v, t ) { return  0.6 + Math.abs( ( u - v ) * 2 * Math.sin( t ) ) },\n	materialCover:	function ( u, v, t ) { return 0.6 }, 	\n\n //NOTE! use mesh.add( geometry.quadLine ); ";
+//__________________________________________________________
+document.images[32].src = "img/    .png";
+parameterList[32].value = "//0...Here is the right place for your example! \n ";
 //__________________________________________________________
   // +++++ Do not destroy the following instructions. +++++ 
   //
