@@ -1,4 +1,4 @@
-// THREEf.js ( rev 86.2  BETA )
+// THREEf.js ( rev 86.3  BETA )
 
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
@@ -3681,9 +3681,7 @@ function morphFaces( time ) {
 }
 
 function vertexNumbersHelper( mesh, size, color ) {	
-
-	// only for geometry (mesh.geometry.vertices ..)
-	
+	 
 	var vertexNumbers = [];
 	var materialDigits = new THREE.LineBasicMaterial( { color: color } );
 	var geometryDigit = [];
@@ -3702,18 +3700,63 @@ function vertexNumbersHelper( mesh, size, color ) {
 	coordDigit[ 8 ] = [ 0,0, 0,9, 6,9, 6,5, 0,5, 6,5, 6,0, 0,0 ];
 	coordDigit[ 9 ] = [ 6,5, 0,5, 0,9, 6,9, 6,0, 0,0 ];
 	
-	for ( var i = 0; i<10; i ++ ) {
+	if ( mesh.geometry.isGeometry) {
 		
-		geometryDigit[ i ]  = new THREE.Geometry();
+	 	var verticesCount = mesh.geometry.vertices.length;
 		
-		for ( var j = 0; j < coordDigit[ i ].length/ 2; j ++ ) {
+		for ( var i = 0; i<10; i ++ ) {
 			
-			geometryDigit[ i ].vertices.push( new THREE.Vector3( 0.1 * size * coordDigit[ i ][ 2 * j ], 0.1 * size * coordDigit[ i ][ 2 * j + 1 ], 0 ) );
+			geometryDigit[ i ]  = new THREE.Geometry();
+			
+			for ( var j = 0; j < coordDigit[ i ].length/ 2; j ++ ) {
+				
+				geometryDigit[ i ].vertices.push( new THREE.Vector3( 0.1 * size * coordDigit[ i ][ 2 * j ], 0.1 * size * coordDigit[ i ][ 2 * j + 1 ], 0 ) );
+				
+			}
+			
+			digit[ i ] = new THREE.Line( geometryDigit[ i ], materialDigits );
 			
 		}
 		
-		digit[ i ] = new THREE.Line( geometryDigit[ i ], materialDigits );
+	}
+	
+	if ( mesh.geometry.isBufferGeometry) { 
 		
+		var verticesCount;
+		
+		if ( mesh.geometry.indexed ) {
+			
+			verticesCount = mesh.geometry.vertices.length / 3 ; 
+			
+		}
+		
+		if ( !mesh.geometry.indexed ) {
+		
+			verticesCount = mesh.geometry.vertexPositions.length;
+		
+		}
+		
+		var digitPositions = [];
+		
+		for ( var i = 0; i < 10; i ++ ) {
+			
+			geometryDigit[ i ] = new THREE.BufferGeometry();
+			
+			digitPositions[ i ] =  new Float32Array( coordDigit[ i ].length / 2 * 3 );
+			geometryDigit[ i ].addAttribute( 'position', new THREE.BufferAttribute( digitPositions[ i ], 3 ) );
+			
+			for ( var j = 0; j < coordDigit[ i ].length/ 2; j ++ ) {
+				
+				digitPositions[ i ][ j * 3 ] =  0.1 * size * coordDigit[ i ][ 2 * j ];
+				digitPositions[ i ][ j * 3 + 1 ] = 0.1 * size * coordDigit[ i ][ 2 * j + 1 ];
+				digitPositions[ i ][ j * 3 + 2 ] = 0;
+				
+			}
+			
+			digit[ i ] = new THREE.Line( geometryDigit[ i ], materialDigits );
+			
+		}	
+			
 	}
 	
 	// numbering the vertices, hundreds ...
@@ -3721,10 +3764,22 @@ function vertexNumbersHelper( mesh, size, color ) {
 	var i10  =  0;
 	var i1   = -1;
 	
-	for ( var i = 0; i < mesh.geometry.vertices.length ; i ++ ) {
+	for ( var i = 0; i < verticesCount ; i ++ ) {
 		
 		// Number on board, up to three digits are pinned there
-		var board = new THREE.Mesh( new THREE.Geometry() );
+		
+		if ( mesh.geometry.isGeometry) {
+			
+			var board = new THREE.Mesh( new THREE.Geometry() );
+			
+		}	
+		
+		if ( mesh.geometry.isBufferGeometry) {
+			
+			var board = new THREE.Mesh( new THREE.BufferGeometry() );
+			
+		}
+		
 		i1 ++;														// starts with  -1 + 1 = 0
 		
 		if ( i1   === 10 ) {i1   = 0; i10 ++ }
@@ -3755,14 +3810,41 @@ function vertexNumbersHelper( mesh, size, color ) {
 		
 	}
 	
-	this.update = function () {
+	this.update = function ( ) {
 		
-		for( var n = 0; n < vertexNumbers.length; n ++ ) {
+		if ( mesh.geometry.isGeometry ) {
 			
-			vertexNumbers[ n ].position.set( mesh.geometry.vertices[ n ].x, mesh.geometry.vertices[ n ].y, mesh.geometry.vertices[ n ].z ); 
-			vertexNumbers[ n ].lookAt( camera.position ); 
+			for( var n = 0; n < vertexNumbers.length; n ++ ) {
+				
+				vertexNumbers[ n ].position.set( mesh.geometry.vertices[ n ].x, mesh.geometry.vertices[ n ].y, mesh.geometry.vertices[ n ].z ); 
+				vertexNumbers[ n ].lookAt( camera.position );
+				
+			}
 			
 		}
+		
+		if ( mesh.geometry.isBufferGeometry && mesh.geometry.indexed ) {
+			
+			for( var n = 0; n < vertexNumbers.length; n ++ ) {
+				
+				vertexNumbers[ n ].position.set( mesh.geometry.vertices[ 3 * n ], mesh.geometry.vertices[ 3 * n  + 1 ], mesh.geometry.vertices[ 3 * n  + 2 ] );
+				vertexNumbers[ n ].lookAt( camera.position );
+				
+			}
+			
+		}
+		
+		if ( mesh.geometry.isBufferGeometry && !mesh.geometry.indexed ) {
+			
+			for( var n = 0; n < vertexNumbers.length; n ++ ) { 
+				
+				vertexNumbers[ n ].position.set( mesh.geometry.positions[ mesh.geometry.vertexPositions[ n ][ 0 ] ], mesh.geometry.positions[ mesh.geometry.vertexPositions[ n ][ 0 ] + 1 ], mesh.geometry.positions[ mesh.geometry.vertexPositions[ n ][ 0 ] + 2] );
+				vertexNumbers[ n ].lookAt( camera.position );
+				
+			}
+		 	
+		}
+		
 	}
 	
 }

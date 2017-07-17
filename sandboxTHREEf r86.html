@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- ........ sandbox THREEf ( rev 86.1 BETA ) ........
+<!-- ........ sandbox THREEf ( rev 86.3 BETA ) ........
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
 */
@@ -23,19 +23,19 @@
 	<script src="THREEf.js"></script>
 	
   <div style="position: absolute; top: 10px; left: 15px; text-align: left;">
-	 show 							<input type="checkbox" id="vertexIndexes"  > (Geometry) indexes - size 
-									<input type="number"   id="indexSize"	value="1.0" step="0.1" >
-									<input type="checkbox" id="floor">  floor -
-									<button type="button"  id="show"> apply now / show mesh </button> 
+	  								<input type="checkbox" id="vertexIndexes"  > show indexes - size 
+									<input type="number"   id="indexSize"	value="1.0" step="0.1" > | 
+									<input type="checkbox" id="floor"> floor  >>> 
+									<button type="button"  id="show"> apply now / show mesh </button> <<<
 									<input type="radio" name="style" id="complete" checked="checked"> complete
 									<input type="radio" name="style" id="cover"	> cover
 									<input type="radio" name="style" id="map"	> map 
 	... ( with firefox )
 	<br />		
-	radius  ..... height / radius ..... height segments	-----
+	radius  ..... height | radius ..... height segments	|
 									<input type="radio" name="geom" id="geometry" > Geometry
-									<input type="radio" name="geom" id="indexedbuffergeo" checked="checked" > indexed BufferGeometry 
-									<input type="radio" name="geom" id="nonindexedbuffergeo" > non indexed BufferGeometry
+									<input type="radio" name="geom" id="indexedbuffergeo" checked="checked" > indexed - 
+									<input type="radio" name="geom" id="nonindexedbuffergeo" > non indexed - BufferGeometry
 	
 									<br />
 									<input type="number"	id="radius"			value="16" >  
@@ -296,6 +296,12 @@ function showNewMesh() {
 		
 	}	
 	
+	if ( vertexNumbersHelper ) {
+	
+		scene.remove( vertexNumbersHelper );
+		
+	}
+	
 	if ( vertexNormalsHelper ) {
 	
 		scene.remove( vertexNormalsHelper );
@@ -336,8 +342,7 @@ function showNewMesh() {
 	inp.centerPoints =				 document.getElementById( "centerPoints"   ).value;
 		
 	fixedMaterialArray = inp.fixedMaterial.split( ',' );
-	
-	
+		
 	centerPointsArray =  eval( inp.centerPoints ); 
 	
 	indexedBuffer = indexedbuffergeo.checked;
@@ -387,33 +392,25 @@ function showNewMesh() {
 			// array of center points, replaces heightSegments, scale segment height(), centerX(), centerY(), centerZ()
 			
 		centerPoints:	useCenterPoints.checked ? centerPointsArray : undefined
-		
+			
 	}	
 	
 	// create the morph geometry / buffer geometry
-	if ( geo.checked ) {
 	
-		geometry = new THREE.Geometry();						// * base class geometry object for costum
+	if ( geo.checked ) {
 		
+		geometry = new THREE.Geometry();						// * base class geometry object for costum
+			
 	}
 	
 	if ( indexedbuffergeo.checked || nonindexedbuffergeo.checked  ) {
-	
-		geometry = new THREE.BufferGeometry();					// * base class buffer geometry object for costum
 		
+		geometry = new THREE.BufferGeometry();					// * base class buffer geometry object for costum
+			
 	}
 	
 	geometry.createMorphGeometry = THREEf.createMorphGeometry;  // ** add the method from THREEf.js
     geometry.createMorphGeometry( p );			 				// *** apply method with the parameters
-	
-	/*
-	!!! now in THREEf.js 
-	if ( geo.checked ) {
-	
-		geometry.computeVertexNormals();	// for smooth shading
-		
-	}
-	*/	
 	
 	// material
 	color =			document.getElementById( "color" ).value; // color of material 1
@@ -428,7 +425,7 @@ function showNewMesh() {
 	var specular =  0x333333;
 	
 	var materials = [
-	
+		
 		new THREE.MeshBasicMaterial( {
 			opacity: 0.15,	transparent: true, 	
 			side: side, wireframe: wireframe } ),					//  0 transparent
@@ -472,22 +469,23 @@ function showNewMesh() {
 		new THREE.MeshPhongMaterial( {
 			color: 0x444444, emissive: 0x444444, specular: specular, 
 			side: side, wireframe: wireframe, shading: shading } )	// 10 grey
-	
+		
 	];
 	
 	// var material = new THREE.MultiMaterial( materials ); // deprecated in r85 (changed to array)
 	
 	if ( document.getElementById( "quadLine" ).checked ) {
-	
-		for ( var m = 1; m < 11; m ++) {
 		
+		for ( var m = 1; m < 11; m ++) {
+			
 			materials[ m ].opacity = 0.8;
 			materials[ m ].transparent = true;
-			
+				
 		}
-	
+		
 	}
-	// Please note regarding function materialCover, fixedMaterialArray and   materials:
+	
+	// Please note regarding function materialCover, fixedMaterialArray and  materials:
 	// If the multimaterial array contains fewer THREE. .. materials
 	// than the functional result * 10 or the highest digit of fixedMaterialArray the script will crash.
 	
@@ -500,15 +498,10 @@ function showNewMesh() {
 	vertexIndexes = document.getElementById( "vertexIndexes" ).checked;	
 	
 	if ( vertexIndexes ) {
-	
-		if ( geo.checked ) {
-			
-			// only THREE.Geometry ( uses vertices )
-			// from THREEf.js    parameters:  mesh, scale, color 	
-			vertexNumbersHelper = new THREEf.vertexNumbersHelper( mesh, document.getElementById( "indexSize" ).value, 0x111199 ); 
 		
-		}
-		
+		// from THREEf.js    parameters:  mesh, scale, color 	
+		vertexNumbersHelper = new THREEf.vertexNumbersHelper( mesh, document.getElementById( "indexSize" ).value, 0x111199 ); 
+				
 	}
 	
 	if ( vertexNormals.checked ) {
@@ -549,7 +542,7 @@ function animate() {
 
 	if ( document.getElementById( "quadLine" ).checked ) { 
 
-	document.getElementById( "circOpen" ).checked = true;
+		document.getElementById( "circOpen" ).checked = true;
 	 
 	}
 
@@ -558,7 +551,7 @@ function animate() {
 		document.getElementById( "useCP" ).innerHTML = "center points in use";
 		
 	} else {
-	
+		
 		document.getElementById( "useCP" ).innerHTML = "use center points x, y, z";
 		
 	}
@@ -566,31 +559,24 @@ function animate() {
 	requestAnimationFrame( animate );
 			
 	if (showGeo) {
-	
+		
 		time = clock.getElapsedTime();
-	
+		
 		geometry.morphVertices( time ); // from THREEf.js	
 		geometry.morphFaces( time );    // from THREEf.js
-		
-		if ( geo.checked ) {
-		
-			// geometry.computeVertexNormals(); // required for smooth shading - now in THREEf
-		
-			if ( vertexIndexes ) {
+
+		if ( vertexIndexes ) {
 			
-				vertexNumbersHelper.update();
+			vertexNumbersHelper.update();
 				
-			}
-			
 		}
-		
+			
 		if ( vertexNormals.checked ) {
 		
 			vertexNormalsHelper.update();
 		
 		}
-		
-		
+				
 	}
 	
 	renderer.render( scene, camera );
