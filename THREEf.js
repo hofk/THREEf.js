@@ -1,4 +1,4 @@
-// THREEf.js ( rev 86.3  BETA )
+// THREEf.js ( rev 86.5 )
 
 /**
  * @author hofk / http://sandbox.threejs.hofk.de/
@@ -72,7 +72,7 @@ p = {
 */
     if ( p === undefined ) p = {};
 	
-	g = this;  // this is a THREE.Geometry()  - the base class geometry object from THREE.js
+	g = this;  // this is a THREE.Geometry() / THREE.BufferGeometry() - the base geometry objects from THREE.js
 	
 	g.noCenterPoints = p.centerPoints === undefined ? true : false;
 	
@@ -184,32 +184,6 @@ function create() {
 	var uZ, uZ1;
 	var topOffset;
 	
-	function uvCoordinatesX() {
-	
-		nj = j / rs;
-		nj1 = ( j + 1 ) / rs;
-		x = g.scaleCircAngle( nj );
-		x1 = g.scaleCircAngle( nj1 );
-	}
-	
-	function uvCoordinatesY() {
-	
-		ni = i / hs;
-		ni1 = ( i + 1 ) / hs;
-		y = g.scaleHeight( ni );
-		y1 = g.scaleHeight( ni1 );
-		
-	}
-		
-	function uvCoordinatesBottomTop() {
-	
-		uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
-		uX1 = 0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
-		uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
-		uZ1 = 0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
-		
-	}
-	
 	if ( g.isGeometry ) {
 		
 		var vertexCount = hvc * rs;
@@ -225,7 +199,34 @@ function create() {
 		var a;					// vertices (index)
 		var b1, b2, b3, b4;
 		var c1, c2, c3, c4;
+		
+		function uvCoordinatesX() {
 	
+			nj = j / rs;
+			nj1 = ( j + 1 ) / rs;
+			x = g.scaleCircAngle( nj );
+			x1 = g.scaleCircAngle( nj1 );
+		
+		}
+	
+		function uvCoordinatesY() {
+	
+			ni = i / hs;
+			ni1 = ( i + 1 ) / hs;
+			y = g.scaleHeight( ni );
+			y1 = g.scaleHeight( ni1 );
+		
+		}
+	
+		function uvCoordinatesBottomTop() {
+	
+			uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			uX1 = 0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
+			uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			uZ1 = 0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
+		
+		}
+		
 		function pushTwoFaceVertexUvs() {
 		
 			g.faceVertexUvs[ 0 ].push( [		// right-bottom
@@ -567,6 +568,15 @@ function create() {
 		
 		var idxCount = 0;
 		
+		function uvCoordinatesBottomTop() {
+	
+			uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			// uX1 = 0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) ); // not required for indexed
+			uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			// uZ1 = 0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) ); // not required for indexed
+		
+		}
+		
 		g.faceIndices = new Uint32Array( faceCount * 3 );
 		g.vertices = new Float32Array( vertexCount * 3 );  
 		g.normals = new Float32Array( vertexCount * 3 ); 
@@ -593,7 +603,7 @@ function create() {
 	
 			for ( var j = 0; j < rs; j ++ ) {
 				
-				uvCoordinatesX();
+				//uvCoordinatesX();
 				
 				for ( var i = 0; i < hs; i ++ ) {
 					
@@ -751,8 +761,8 @@ function create() {
 			
 			for ( var j = 0; j < rs; j ++ ) {
 			
-				uvCoordinatesX();
-				xC = 0.5 * ( x + x1 );
+				//uvCoordinatesX();
+				//xC = 0.5 * ( x + x1 );
 				
 				for ( var i = 0; i < hs; i ++ ) {
 				
@@ -1229,8 +1239,8 @@ function create() {
 					
 					vIdx = hvc * rs  + hss + 1 + j; // vertex index
 					
-					uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( 1 - j / rs ) ) );
-					uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( 1 -  j / rs ) ) );
+					nj  = 1 - j / rs;
+					uvCoordinatesBottomTop();
 					
 					g.uvs[ vIdx * 2 ] = uX;
 					g.uvs[ vIdx * 2 + 1 ] = uZ;
@@ -1250,8 +1260,8 @@ function create() {
 					
 					vIdx = hvc * rs  + hss + topOffset + 1 + j; // vertex index
 					
-					uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( j / rs ) ) );
-					uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( j / rs ) ) );
+					nj  = j / rs;
+					uvCoordinatesBottomTop();
 					
 					g.uvs[ vIdx * 2 ] = uX;
 					g.uvs[ vIdx * 2 + 1 ] = uZ;
@@ -1291,6 +1301,15 @@ function create() {
 		var faceCount = hs * rs * fps;
 		faceCount += g.withBottom ? rs : 0;
 		faceCount += g.withTop ? rs : 0;
+		
+		function uvCoordinatesBottomTop() {
+	
+			uX =  0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			uX1 = 0.5 * ( 1 - Math.sin( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
+			uZ =  0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj ) ) );
+			uZ1 = 0.5 * ( 1 + Math.cos( 2 * Math.PI * g.scaleCircAngle( nj1 ) ) );
+		
+		}
 		
 		g.positions = new Float32Array( faceCount * 9 );
 		g.normals = new Float32Array( faceCount * 9 );
@@ -2103,82 +2122,63 @@ function morphVertices( time ) {
 				
 				if ( i === 0 ) {
 					
-					// mode of calculating the first binormal
-					
-					// ........................  BETA  .........................
-					
-					var mode = 6; 	// ... BETA ...  var mode = 1; ... var mode = 6;  
-					
-					if ( mode === 0 ) {	
-						
-						// prevents division by zero
-						tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-						
-						bX = tX;
-						bY = -( tX * tX + tZ * tZ ) / tY;
-						bZ = tZ;
-						
-					}
-					
-					if ( mode === 1 ) {
-						// prevents division by zero
-						tZ = ( tZ < 0 ) ? ( ( tZ > -0.0000001 ) ? -0.0000001 : tZ ) : ( ( tZ < 0.0000001 ) ? 0.0000001 : tZ );		
-						
-						bX = 1;
-						bY = ( tY * tY - tX ) / tZ;
-						bZ = tZ;
-						
-					}
-					
-					if ( mode === 2 ) {
-						
-						bX = tZ;
-						bY = 0;
-						bZ = -tX;
-						
-					}
-					
-					if ( mode === 3 ) {
-						
-						// prevents division by zero
-						tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-						
-						bX = 1;
-						bY = -tX / tY ;
-						bZ = 0;
-						
-					}
-					
-					if ( mode === 4 ) {
-						
-						// prevents division by zero
-						tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-						
-						bX =  1;
-						bY =  tY < 0 ? ( tX < 0 ? tX / tY  :  -tX / tY ) : ( tX < 0 ? -tX / tY : tX / tY );
-						bZ = 0;
-						
-					}
-					
-					if ( mode === 5 ) {
-						
-						bX = tY !== 0 ? 1 : 0;
-						bY = tY !== 0 ? -tX / tY : 1;
-						bZ = 0;
-						
-					}
-					
-					if ( mode === 6 ) {
-						
-						bX = 1;
-						bY = tY !== 0 ? 0.000101 : -0.999989;
-						bZ = 0;
-						
-					}
-					
-					// .........................................................
+					// first binormal
+
+					bX = 1;
+					bY = tY !== 0 ? 0.000101 : -0.999989;
+					bZ = 0;
 					
 				}
+				
+				/* If there are problems with the first binormal in an example, try one of the following variants.
+				
+					// prevents division by zero
+					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
+					
+					bX = tX;
+					bY = -( tX * tX + tZ * tZ ) / tY;
+					bZ = tZ;
+					
+					//...............................
+						
+					// prevents division by zero
+					tZ = ( tZ < 0 ) ? ( ( tZ > -0.0000001 ) ? -0.0000001 : tZ ) : ( ( tZ < 0.0000001 ) ? 0.0000001 : tZ );		
+					
+					bX = 1;
+					bY = ( tY * tY - tX ) / tZ;
+					bZ = tZ;
+					
+					//...............................
+									
+					bX = tZ;
+					bY = 0;
+					bZ = -tX;
+					
+					//...............................
+					
+					// prevents division by zero
+					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
+					
+					bX = 1;
+					bY = -tX / tY ;
+					bZ = 0;
+					
+					//...............................
+					
+					// prevents division by zero
+					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
+					
+					bX = 1;
+					bY = tY < 0 ? ( tX < 0 ? tX / tY  :  -tX / tY ) : ( tX < 0 ? -tX / tY : tX / tY );
+					bZ = 0;
+					
+					//...............................
+																
+					bX = tY !== 0 ? 1 : 0;
+					bY = tY !== 0 ? -tX / tY : 1;
+					bZ = 0;	
+					
+				*/
 				
 				// cross product b, t calculates the normal ( if i > 0  binormal from last segment )
 				// see http://www.cs.cmu.edu/afs/andrew/scs/cs/15-462/web/old/asst2camera.html
