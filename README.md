@@ -29,6 +29,12 @@ mesh.add( geometry.quadLine ); //  only if used propertie quadLine:  add the qua
 ```
 Include: 	<script src="THREEf.js"></script> 
 
+-------------------------------------------------------------
+ _87 now contains
+function vertexFaceNumbersHelper (mesh, mode, size, color) {)
+	// mode: 0 nothing, 1 vertex, 2 face, 3 vertex & face
+and uses .flatShading: true or false; // three.js r87
+
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
 
