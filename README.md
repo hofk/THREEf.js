@@ -35,7 +35,9 @@ _87 now contains
 function vertexFaceNumbersHelper (mesh, mode, size, color) 
 	// mode: 0 nothing, 1 vertex, 2 face, 3 vertex & face
 and uses .flatShading: true or false; // three.js r87
-----------------
+
+-----------------------------------------------------
+
 _88 now contains
 explode, // function ( t ) // factor for exploded view (only non indexed BufferGeometry)
 
