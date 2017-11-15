@@ -35,7 +35,13 @@ _87 now contains
 function vertexFaceNumbersHelper (mesh, mode, size, color) 
 	// mode: 0 nothing, 1 vertex, 2 face, 3 vertex & face
 and uses .flatShading: true or false; // three.js r87
+----------------
+_88 now contains
+explode, // function ( t ) // factor for exploded view (only non indexed BufferGeometry)
+
 ````
+
+
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
 
@@ -94,7 +100,8 @@ p = {
 	waffleDeep,		//	function ( u, v, t )	// radius difference center vertex	
 	moveX,			//	function ( u, v, t )	// factor for radius, move in x direction 
 	moveY,			//	function ( u, v, t )	// factor for height, move in y direction
-	moveZ,			//	function ( v, u, t )	// factor for radius, move in z direction	
+	moveZ,			//	function ( v, u, t )	// factor for radius, move in z direction
+	explode,		// 	function ( t )		// factor for exploded view (only non indexed BufferGeometry)
 	endCircAngle,	//	function ( v, t )	// circular end angle (per height)
 	startCircAngle,	//	function ( v, t )	// circular starting angle (per height)
 	scaleCircAngle,	//	function ( u, t )	// scaling between start and end of circular angle
