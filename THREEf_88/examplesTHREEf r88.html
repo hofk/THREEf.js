@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--   *** examples THREEf ( r88.0 ) ***
+/**
+ * @author hofk / http://sandbox.threejs.hofk.de/
+*/
+-->
+<html lang="de">
+<head>
+	<title> examples THREEf   </title>
+	<meta charset="utf-8" />
+</head>
+<body> 
+	Geometry and BufferGeometry - source code ctrl + U  ...  
+ <a href="formLibrary.html" title="webgl three.js" target="_blank"> form library.html ( in progress ) </a>
+
+</body>
+	<script src="three.min.88.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="THREEx.WindowResize.js"></script>
+	<script src="THREEf.js"></script>
+<script>
+'use strict'
+
+var scene = new THREE.Scene();
+
+var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 2000 );
+camera.position.set( 0, 400, 500 );
+
+var renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor( 0xdddddd, 1 );	
+
+var container = document.createElement( 'div' );
+document.body.appendChild( container );
+container.appendChild( renderer.domElement ); 
+
+THREEx.WindowResize( renderer, camera );
+var controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.enableZoom = true;
+
+var light1 = new THREE.PointLight( 0xffffff, 1, 0 );
+light1.position.set( -100, 500, -700 ); 	
+scene.add( light1 ); 
+var light2 = new THREE.PointLight( 0xffffff, 1, 0 );
+light2.position.set( 100, -100, 400 ); 	
+scene.add( light2 ); 
+
+var clock  = new THREE.Clock( true );	
+var time;	// for animate .morphVertices( time ) and .morphFaces( time ) )
+
+// material
+var uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );			
+var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );	
+var side =  THREE.DoubleSide;
+
+
+var materials = [																			// material index:
+	new THREE.MeshBasicMaterial( { transparent: true, opacity: 0.15, 	side: side	} ),	//  0 transparent
+	new THREE.MeshBasicMaterial( { map: uvTex, 							side: side	} ),	//  1 uv grid
+	new THREE.MeshPhongMaterial( { color: 0xff0000, emissive: 0xff0000, side: side	} ),	//  2 red
+	new THREE.MeshPhongMaterial( { color: 0x00ff00, emissive: 0x00ff00, side: side	} ),	//  3 green
+	new THREE.MeshPhongMaterial( { color: 0x0000ff, emissive: 0x0000ff, side: side	} ),	//  4 blue
+	new THREE.MeshPhongMaterial( { color: 0xffff00, emissive: 0xffff00, side: side	} ),	//  5 yellow
+	new THREE.MeshPhongMaterial( { color: 0xff00ff, emissive: 0xff00ff, side: side	} ),	//  6 mgenta
+	new THREE.MeshPhongMaterial( { color: 0x00ffff, emissive: 0x00ffff, side: side	} ),	//  7 cyan	
+	new THREE.MeshBasicMaterial( { map: waterlilyTex,					side: side	} ),	//  8 photo waterlily (free)
+	new THREE.MeshPhongMaterial( { color: 0x7755ff, emissive: 0x4433dd, side: side	} ),	//  9 color
+	new THREE.MeshPhongMaterial( { color: 0x444444, emissive: 0x333333, side: side	} )		// 10 grey
+];
+
+// var material = new THREE.MultiMaterial( materials );  // deprecated in r85 (changed to array)
+
+// Geometry and BufferGeometry (indexed, non indexed)
+
+var geometry01 =  new THREE.Geometry();	//  --- Base class for building custom geometries in THREE.js --- 
+geometry01.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+geometry01.createMorphGeometry();		// apply the methode ( without parameters: all default )
+
+var geometry02 =  new THREE.Geometry();	//  --- Base class for building custom geometries in THREE.js --- 
+geometry02.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry02.createMorphGeometry({ 
+
+	radius:			70,
+	height:			70,
+	radiusSegments:	20,
+	withBottom:		true, 
+	materialBottom: function ( u, t ) { return 0.2 +  u * 0.4 * ( 1 + Math.sin( 0.2 * t ) ) }, 
+	topHeight:		function ( u, t ) { return Math.cos( 2.6 * u - 1.3 ) },
+	rCircHeight:	function (u,v,t ) { return ( v + 1 ) * ( u <= 0.125 || ( u > 0.375 && u < 0.625 ) || u > 0.875 ? 0.3 : 0.5 ) } // without t
+
+});		
+
+var geometry03 = new THREE.BufferGeometry();   //  --- Base class for building custom Buffer geometries in THREE.js --- 
+geometry03.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+var differentFaces = ['','','....66666666','....66666666','','','','','....0000..0000','....0000..0000'];
+// apply the methode with some parameters
+geometry03.createMorphGeometry({ 
+
+	// indexed: true, // is default!
+	rCircHeight: function ( u, v, t ) { return Math.sin( 1.56 * u ) * Math.sqrt( 0.25 - ( v - 0.5 ) * ( v - 0.5 ) ) * ( 1.5 + 0.5 * Math.sin( t ) ) },
+	circOpen: false,
+	fixedMaterial: differentFaces,
+	radius: 100,
+	heightSegments: 32
+ 
+});	
+
+var geometry04 = new THREE.Geometry();   //  --- Base class for building custom geometries in THREE.js --- 
+geometry04.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry04.createMorphGeometry({ 
+
+	height: 80,
+	heightSegments: 80,
+	rCircHeight:  	function ( u, v, t ) { return 1.01 + Math.cos( 25.2 * v ) * Math.sin( 0.2 * t ) },
+	centerX:		function ( v, t ) { return 0.75*Math.sin( 9 * v + 0.2 * t)},	
+	centerZ:		function ( v, t ) { return 0.45*Math.cos( 9 * v + 0.2 * t)},
+	materialCover:	function ( u, v, t) { return Math.floor( t ) % 20 < 5 ? 0 : 0.8 }
+		
+});	
+
+var geometry05 = new THREE.BufferGeometry();   //  --- Base class for building custom buffer geometries in THREE.js --- 
+geometry05.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry05.createMorphGeometry({
+	
+	indexed:	false, // non-indexed BufferGeometry
+	circOpen:	true,
+	unrollCover:	function ( v, t) { return 0.25 * ( 1.4 + Math.sin( 0.5 * t )) },
+	endCircAngle:	function ( v, t) { return 0.9 + 0.1 * Math.sin( 3.14 * v ) },
+	startCircAngle:	function ( v, t) { return -0.1 * Math.sin( 3.14 * v ) },	
+	topHeight:		function ( u, t) { return 0.9 + 0.1 * Math.sin( 3.14 * u ) },
+	bottomHeight:   function ( u, t) { return -0.1 * Math.sin( 3.14 * u ) },
+	materialCover:	function ( u, v, t)	{ return 0.8 }
+	
+});	
+
+var geometry06 = new THREE.Geometry();   //  --- Base class for building custom geometries in THREE.js --- 
+geometry06.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry06.createMorphGeometry({
+
+// coil spring
+radius: 2,
+height: 160,
+radiusSegments: 16,
+heightSegments: 500,
+centerX: function ( v, t ) { return 0.5 * Math.sin( 10 * Math.PI * v ) },
+centerY: function ( v, t ) { return v * ( v + 0.4 * ( 1 + Math.sin( t ) ) ) },
+centerZ: function ( v, t ) { return 0.5 * Math.cos( 10 * Math.PI * v ) }
+	
+});	
+
+var geometry07 = new THREE.Geometry();   //  --- Base class for building custom geometries in THREE.js --- 
+geometry07.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry07.createMorphGeometry({
+
+// 2
+materialCover: function ( u, v, t)	{ return 0.1 + 0.3 * ( 1 + Math.sin( 0.5 * t ) ) },
+centerPoints: [ [ .6, 0, 0 ], [ .5, 0, 0 ], [ .4, 0, 0 ],[ .3, 0, 0 ], [ .2, 0, 0 ],[ .1, .01, 0 ], [ .02, .07, 0 ], [ 0, .1 , 0 ], [ .02, .13, 0 ], [ .1, .21, 0 ], [ .2, .28, 0 ], [ .3, .35 , 0 ], [ .4, .42 , 0 ], [ .5,.5 , 0 ],[ 0.58, .6 , 0 ],[ .6, .7, 0 ], [ .58, .8, 0 ], [ .51, .9, 0 ], [ .44, .95, 0 ], [ .38, .98, 0 ], [ .3, 1, 0 ],[ .2, .99, 0 ], [ .1, .94, 0 ], [ 0, 0.88, 0 ] ]
+
+});	
+
+var geometry08 = new THREE.BufferGeometry();   //  --- Base class for building custom buffer geometries in THREE.js ---  
+geometry08.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry08.createMorphGeometry({
+
+// heart
+indexed:	false, // non-indexed BufferGeometry
+explode: 	function ( t ) { return 0.15 + 0.15 * Math.sin( 0.3 * t ) }, // explode function since r88
+
+radiusSegments: 50,
+height:			10,
+withTop:		true,
+withBottom:		true,
+rCircHeight:	function ( u, v, t ) { return 20 * ( u - 0.5 ) * ( u - 0.5 ) + 0.3 * Math.sin ( Math.PI * v ) + 0.3 * Math.sin( t ) },
+moveX:			function ( u, v, t ) { return  -Math.cos( 2 * Math.PI * u ) },
+topHeight:		function ( u, t ) { return   0.6 * ( 1.4 + Math.cos ( Math.sin( t ) * Math.sin( t ) * u ) ) },
+materialTop:	function ( u, t ) { return 0.2 },
+materialBottom:	function ( u, t ) { return 0.2 },	
+materialCover:	function ( u, v, t ) { return 0.2 },
+
+});	
+
+
+var geometry09 = new THREE.BufferGeometry();   //  --- Base class for building custom buffer geometries in THREE.js --- 
+geometry09.createMorphGeometry = THREEf.createMorphGeometry;  // insert the methode from THREEf.js
+// apply the methode with some parameters
+geometry09.createMorphGeometry({
+	
+	quadLine: true,
+	quadColor: 0xff00ff,
+	style: 'cover',
+	materialCover: function ( u, v, t ) { return 0 },
+	rCircHeight: function ( u, v, t ) { return  Math.sin( t + 6.28 * u ) + Math.sin( t + 6.28 * v ) },	
+	
+});	
+
+// meshes
+
+var mesh01 = new THREE.Mesh( geometry01, materials );
+scene.add( mesh01 );
+mesh01.position.set( 0, 0, 200 );
+
+// vertexFaceNumbersHelper( mesh, mode, size, color ) 
+//  mode: 0 nothing, 1 vertex, 2 face, 3 vertex & face
+var vertexFaceNumbersHelper01 = new THREEf.vertexFaceNumbersHelper( mesh01, 1, 3, 0xff00ff );
+vertexFaceNumbersHelper01.update( 1 );  // ( 1 ) mode
+ 
+var mesh02 = new THREE.Mesh( geometry02, materials );
+scene.add( mesh02 );
+mesh02.position.set( -200, 0, 0 );
+
+var mesh03 = new THREE.Mesh( geometry03, materials );
+scene.add( mesh03 );
+mesh03.rotation.y = 2.2;
+mesh03.position.set( 0, 0, -200 );
+
+var mesh04 = new THREE.Mesh( geometry04, materials );
+scene.add( mesh04 );
+mesh04.position.set( 200, 0, 0 );
+
+var mesh05 = new THREE.Mesh( geometry05, materials );
+scene.add( mesh05 );
+mesh05.rotation.y = -1.25;
+//mesh05.position.set( 0, 0, 0 );
+
+var mesh06 = new THREE.Mesh( geometry06, materials );
+scene.add( mesh06 );
+//mesh06.position.set( 0, 0, 0 );
+
+var mesh07 = new THREE.Mesh( geometry07, materials );
+scene.add( mesh07 );
+mesh07.position.set( -200, 0, -200 );
+
+var mesh08 = new THREE.Mesh( geometry08, materials );
+scene.add( mesh08 );
+mesh08.position.set( -200, 0, 200 );
+animate();
+
+var mesh09 = new THREE.Mesh( geometry09, materials );
+scene.add( mesh09 );
+
+mesh09.add( geometry09.quadLine ); // add the outline 
+
+mesh09.position.set( 100, 0, 200 );
+
+animate();
+
+//..................
+
+function animate() {
+
+	requestAnimationFrame( animate );
+	
+	time = clock.getElapsedTime();
+			
+	// geometry01.morphVertices( time ); // only if needed, function ( .., t )			
+		
+	// show vertex numbers (mode 1) of example 01 on the right place		
+	// vertexFaceNumbersHelper01.update( 1 );	// only if needed, function ( .., t ) - only Geometry
+	
+	geometry02.morphVertices(time);		// only if needed, definition of function ( .., t ) - when t used
+	geometry02.morphFaces( time );		// for: materialBottom: 	function ( u, t ) { ... },
+	mesh02.rotation.y = 0.2 * time;		// standard THREE mesh methode
+	
+	geometry03.morphVertices( time );			
+	// geometry03.morphFaces();			// no morph faces while animate
+		
+	geometry04.morphVertices( time );			
+	geometry04.morphFaces( time );		// for: materialCover: function (u,v,t){ ... }
+	
+	geometry05.morphVertices( time );			
+	//geometry05.morphFaces();			// no morph faces while animate
+	
+	geometry06.morphVertices( time );			
+	//geometry06.morphFaces();			// no morph faces while animate
+	
+	geometry07.morphVertices( time );			
+	geometry07.morphFaces( time );		// for: materialCover: function (u,v,t){ ... }
+	
+	geometry08.morphVertices( time );
+	//geometry08.morphFaces();			// no morph faces while animate
+	
+	geometry09.morphVertices( time );
+	//geometry09.morphFaces();			// no morph faces while animate
+	
+	renderer.render( scene, camera );
+	controls.update();
+	
+}
+</script>
+
+</html>
