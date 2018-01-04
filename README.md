@@ -47,6 +47,10 @@ _89 now contains
 fixedMatTop,	// fixed given material index (string of digits for faces), overrides materialTop values
 fixedMatBottom,	// fixed given material index (string of digits for faces), overrides materialBottom values
 
+Additionally there is the tool modifyCreateGeo.html.
+It outputs the elementary BufferGeometry definition for a selected time.
+The output can be easily copied with Ctrl+A and Ctrl+C. There is no further .innerHTML content on the page!
+
 ````
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
