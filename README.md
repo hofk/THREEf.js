@@ -7,7 +7,7 @@ THREE.js addon, to produce almost infinite many time-varying Geometries and Buff
 
  #####  * Inspired by https://threejs.org/examples/js/ParametricGeometries.js ( @author zz85 )*
 
-Produce almost infinite many time-varying Geometries or BufferGeometries with only 12 properties, 19 functions and 2 arrays:
+Produce almost infinite many time-varying Geometries or BufferGeometries with only 14 properties, 19 functions and 2 arrays:
 
 ```javascript
 
@@ -41,9 +41,13 @@ and uses .flatShading: true or false; // three.js r87
 _88 now contains
 explode, // function ( t ) // factor for exploded view (only non indexed BufferGeometry)
 
+-----------------------------------------------------
+
+_89 now contains
+fixedMatTop,	// fixed given material index (string of digits for faces), overrides materialTop values
+fixedMatBottom,	// fixed given material index (string of digits for faces), overrides materialBottom values
+
 ````
-
-
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
 
@@ -80,11 +84,13 @@ p = {
 	indexed,		// indexed or non indexed BufferGeometry
 	radius,			// reference radius, multiplier for functions
 	height,			// reference height, multiplier for functions
-	radiusSegments,	// radius segments (number)
-	heightSegments,	// height segments (number)
+	radiusSegments,		// radius segments (number)
+	heightSegments,		// height segments (number)
 	circOpen,		// circular connected or disconnected
 	withTop,		// with a top
+	fixedMatTop,		// fixed given material index (string of digits for faces), overrides materialTop values
 	withBottom,		// with a bottom
+	fixedMatBottom,		// fixed given material index (string of digits for faces), overrides materialBottom values
 	waffled,		// four faces / segment, with center vertex
 	quadLine,		// separate quad line, only aviable when circular open
 	quadColor,		// color of quad line
@@ -94,26 +100,26 @@ p = {
 			// ( trigonometric functions often with factor n * PI )
 		// u radial, v heigt, t time
 	
-	rCircHeight,  	//	function ( u, v, t )	// radius depending on segment location
+	rCircHeight,  		//	function ( u, v, t )	// radius depending on segment location
 	centerX,		//	function ( v, t )	// centerpoint x by height
 	centerY,		//	function ( v, t )	// centerpoint y by height
 	centerZ,		//	function ( v, t )	// centerpoint z by height
-	unrollCover,	//	function ( v, t )	// 0 closed, 1 linear open (to -1*radius)
+	unrollCover,		//	function ( v, t )	// 0 closed, 1 linear open (to -1*radius)
 	waffleDeep,		//	function ( u, v, t )	// radius difference center vertex	
 	moveX,			//	function ( u, v, t )	// factor for radius, move in x direction 
 	moveY,			//	function ( u, v, t )	// factor for height, move in y direction
 	moveZ,			//	function ( v, u, t )	// factor for radius, move in z direction
 	explode,		// 	function ( t )		// factor for exploded view (only non indexed BufferGeometry)
-	endCircAngle,	//	function ( v, t )	// circular end angle (per height)
-	startCircAngle,	//	function ( v, t )	// circular starting angle (per height)
-	scaleCircAngle,	//	function ( u, t )	// scaling between start and end of circular angle
+	endCircAngle,		//	function ( v, t )	// circular end angle (per height)
+	startCircAngle,		//	function ( v, t )	// circular starting angle (per height)
+	scaleCircAngle,		//	function ( u, t )	// scaling between start and end of circular angle
 	topHeight,		//	function ( u, t )	// top height (per circular angle)
-	bottomHeight,	//	function ( u, t )	// bottom height (per circular angle)
-	scaleHeight, 	//	function ( v, t )	// scaling between bottom and top height
-	materialTop,	//	function ( u, t )	// material top ( per circular sector)
-	materialBottom,	//	function ( u, t )	// material bottom ( per circular sector)
-	materialCover,	//	function ( u, v, t )	// material cover ( per circular sector and height )
-											// material: round( result*10 ) is material index  0 .. 10
+	bottomHeight,		//	function ( u, t )	// bottom height (per circular angle)
+	scaleHeight, 		//	function ( v, t )	// scaling between bottom and top height
+	materialTop,		//	function ( u, t )	// material top ( per circular sector)
+	materialBottom,		//	function ( u, t )	// material bottom ( per circular sector)
+	materialCover,		//	function ( u, v, t )	// material cover ( per circular sector and height )
+									// material: round( result*10 ) is material index  0 .. 10
 	
 		// string array (strings of digits) seperated with a ,
 		
