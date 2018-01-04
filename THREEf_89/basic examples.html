@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--  *** basic examples  r89.0 ***
+/**
+ * @author hofk / http://sandbox.threejs.hofk.de/
+*/
+-->
+<html lang="de">
+<head>
+	<title> THREEf basic examples  </title>
+	<meta charset="utf-8" />
+</head>
+<body> 	
+	examples from left: Geometry, indexed & non-indexed BufferGeometry  -  source code ctrl + U  -
+	 <a href="examplesTHREEf r89.html" title="examples" target="_blank"> further examples  </a>
+</body>
+	<script src="three.min.89.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="THREEx.WindowResize.js"></script>
+	<script src="THREEf.js"></script>
+<script>
+
+'use strict'
+
+var scene = new THREE.Scene();
+
+var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 20000 );
+camera.position.set( -10, 20, 600 );
+
+var renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor( 0xdddddd, 1 );	
+
+var container = document.createElement( 'div' );
+document.body.appendChild( container );
+container.appendChild( renderer.domElement ); 
+
+THREEx.WindowResize( renderer, camera );
+var controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.enableZoom = true;
+
+var clock  = new THREE.Clock( true );	
+var time;	// for animate .morphVertices( time ) and .morphFaces( time ) )
+
+// material
+var uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );			
+var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );	
+var side =  THREE.DoubleSide;
+
+var materials = [
+																						// material index:
+    new THREE.MeshBasicMaterial( { transparent: true, opacity: 0.15, 	side: side	} ),	//  0 transparent
+	new THREE.MeshBasicMaterial( { map: uvTex, 							side: side	} ),	//  1 uv grid
+	new THREE.MeshPhongMaterial( { color: 0xff0000, emissive: 0xff0000, side: side, } ),	//  2 red
+	new THREE.MeshPhongMaterial( { color: 0x00ff00, emissive: 0x00ff00, side: side, } ),	//  3 green
+	new THREE.MeshPhongMaterial( { color: 0x0000ff, emissive: 0x0000ff, side: side, } ),	//  4 blue
+	new THREE.MeshPhongMaterial( { color: 0xffff00, emissive: 0xffff00, side: side, } ),	//  5 yellow
+	new THREE.MeshPhongMaterial( { color: 0xff00ff, emissive: 0xff00ff, side: side, } ),	//  6 mgenta
+	new THREE.MeshPhongMaterial( { color: 0x00ffff, emissive: 0x00ffff, side: side, } ),	//  7 cyan	
+	new THREE.MeshBasicMaterial( { map: waterlilyTex,					side: side	} ),	//  8 photo waterlily (free)
+	new THREE.MeshPhongMaterial( { color: 0x7755ff, emissive: 0x4433dd, side: side	} ),	//  9 color
+	new THREE.MeshPhongMaterial( { color: 0x444444, emissive: 0x333333, side: side	} )		// 10 grey
+	
+];
+
+var light1 = new THREE.DirectionalLight();
+light1.intensity =  0.6;  
+light1.position.set(50, 200, 300);
+scene.add(light1);
+
+var light2 = new THREE.DirectionalLight();
+light2.intensity =  0.5;  
+light2.position.set(-50, -200, 300);
+scene.add(light2);
+
+/*
+
+//  *** aviable parameters ***
+ 
+indexed: false,
+radius:	,
+height:	,
+radiusSegments: ,
+heightSegments: ,
+circOpen: true,	
+withTop: true,
+withBottom: true,
+waffled: true,
+style: 'complete',
+rCircHeight:	function ( u, v, t ) { return },
+centerX:		function ( v, t ) { return  },
+centerY:		function ( v, t ) { return  },
+centerZ:		function ( v, t ) { return  },
+unrollCover:	function ( v, t ) { return },
+waffleDeep:		function ( u, v, t ) { return  },
+moveX:			function ( u, v, t ) { return  },
+moveY:			function ( u, v, t ) { return  },
+moveZ:			function ( u, v, t ) { return  },
+explode,		function ( t ),
+endCircAngle:	function ( v, t ) { return  },	
+startCircAngle:	function ( v, t ) { return  },	
+scaleCircAngle:	function ( u, t ) { return  },	
+topHeight:		function ( u, t ) { return  },
+bottomHeight:	function ( u, t ) { return  },		
+scaleHeight:	function ( v, t ) { return  },	
+materialTop:	function ( u, t ) { return  },
+materialBottom:	function ( u, t ) { return  },
+materialCover:	function ( u, v, t ) { return  },	
+fixedMaterial: [ '222222555555', '222222777777' ],	// example
+centerPoints:	[ [ .6, 0, 0 ], [ .5, 0, 0 ], [ .4, 0, 0 ],[ .3, 0, 0 ], [ .2, 0, 0 ],[ .1, .01, 0 ], [ .02, .07, 0 ], [ 0, .1 , 0], [ .02, .13, 0], [ .1, .21, 0],  [ .2, .28, 0], [ .3, .35 , 0], [ .4, .42 , 0], [ .5, .5 , 0],[ 0.58, .6 , 0 ],[ .6, .7, 0 ], [ .58, .8, 0 ], [ .51, .9, 0], [ .44, .95, 0], [ .38, .98, 0], [ .3, 1, 0 ],[ .2, .99, 0 ], [ .1, .94, 0 ], [ 0, 0.88, 0 ] ], // example, replaces heightSegments, scaleHeight and the center functions centerX, centerY, centerZ !
+
+*/
+
+var parameters = { 
+
+	height:	160,
+	radiusSegments: 36,
+	heightSegments: 25,
+	rCircHeight:	function ( u, v, t ) { return  1.4 +  Math.sin( 5 * v * t ) },
+	centerX:	function ( v, t ) { return 0.4 * v * ( 1 + Math.sin( v + t ) ) },
+	centerZ:	function ( v, t ) { return 0.4 * v * ( 1 + Math.cos( v + t ) ) },
+	materialCover:	function ( u, v, t ) { return 0.1 + 0.4 * ( 1 + Math.sin( u + 2 * t ) ) },	
+	withTop:	true,
+	fixedMaterial: [ '222222555555', '222222777777' ],
+
+ }
+
+var geometry =  new THREE.Geometry();
+geometry.createMorphGeometry = THREEf.createMorphGeometry;
+geometry.createMorphGeometry( parameters );
+
+var indexedBufferGeometry = new THREE.BufferGeometry();
+indexedBufferGeometry.createMorphGeometry = THREEf.createMorphGeometry;
+indexedBufferGeometry.createMorphGeometry( parameters );
+
+var nonIndexedBufferGeometry = new THREE.BufferGeometry();
+nonIndexedBufferGeometry.createMorphGeometry = THREEf.createMorphGeometry;
+parameters.indexed = false;
+nonIndexedBufferGeometry.createMorphGeometry( parameters );
+
+// meshes
+var mesh1 = new THREE.Mesh( geometry, materials );
+var mesh2 = new THREE.Mesh( indexedBufferGeometry , materials );
+var mesh3 = new THREE.Mesh( nonIndexedBufferGeometry, materials );
+
+scene.add( mesh1 );
+scene.add( mesh2 );
+scene.add( mesh3 );
+
+mesh1.position.set( -200, 0, 0 );
+mesh2.position.set( 0, 0, -200 );
+mesh3.position.set( 200, 0, 0 );
+
+animate();
+
+//..................
+
+function animate() {
+
+	requestAnimationFrame( animate );
+	
+	time = clock.getElapsedTime();
+	
+	geometry.morphVertices( time );	
+	indexedBufferGeometry.morphVertices( time );
+	nonIndexedBufferGeometry.morphVertices( time );
+	
+ 	geometry.morphFaces( time );
+	indexedBufferGeometry.morphFaces( time );
+	nonIndexedBufferGeometry.morphFaces( time );
+	
+	mesh1.rotation.y = time;
+	mesh2.rotation.y = time;
+	mesh3.rotation.y = time;
+	
+	renderer.render( scene, camera );
+	controls.update();
+	
+}
+</script>
+
+</html>
