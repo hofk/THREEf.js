@@ -30,6 +30,9 @@
 	<input type="radio" name="tInput" id="asRange"  checked="checked">
 	<input type="range" id="tRange" min="0" max="100" value="0" step="0.001" > 
 	
+	<button id="dec">decimals=</button>
+	<input type="number" id="nDec" min="1" max="21" value="3" step="1" >
+	
 	<button id="wirefr">wireframe</button>
 	
 	
@@ -72,26 +75,61 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 //controls.enableZoom = true;
 
 // material
-var uvTex = new THREE.TextureLoader().load( "uvgrid01.png" );			
-var waterlilyTex = new THREE.TextureLoader().load( "waterlily.png" );	
-var side = THREE.DoubleSide;
-var wirefr = false;
+var uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );			
+var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );
+//var earth			= new THREE.TextureLoader().load( "earth_nasa_map_900.png" );	
+var side =  THREE.DoubleSide;
+var wireframe = false;
+var specular =  0x333333;
+var flatShading = true;
 
-var materials = [
-																								// material index:
-    new THREE.MeshBasicMaterial( { color: 0xffffcc, opacity: 0.2, side: side, wireframe: wirefr, transparent: true } ), //  0 transparent
-	new THREE.MeshBasicMaterial( { map: uvTex, 							side: side,	wireframe: wirefr } ), //  1 uv grid
-	new THREE.MeshPhongMaterial( { color: 0xff0000, emissive: 0xff0000, side: side,	wireframe: wirefr } ), //  2 red
-	new THREE.MeshPhongMaterial( { color: 0x00ff00, emissive: 0x00ff00, side: side,	wireframe: wirefr } ), //  3 green
-	new THREE.MeshPhongMaterial( { color: 0x0000ff, emissive: 0x0000ff, side: side,	wireframe: wirefr } ), //  4 blue
-	new THREE.MeshPhongMaterial( { color: 0xffff00, emissive: 0xffff00, side: side,	wireframe: wirefr } ), //  5 yellow
-	new THREE.MeshPhongMaterial( { color: 0xff00ff, emissive: 0xff00ff, side: side,	wireframe: wirefr } ), //  6 mgenta
-	new THREE.MeshPhongMaterial( { color: 0x00ffff, emissive: 0x00ffff, side: side,	wireframe: wirefr } ), //  7 cyan	
-	new THREE.MeshBasicMaterial( { map: waterlilyTex,					side: side,	wireframe: wirefr } ), //  8 photo waterlily (free)
-	new THREE.MeshPhongMaterial( { color: 0x7755ff, emissive: 0x4433dd, side: side,	wireframe: wirefr } ), //  9 color
-	new THREE.MeshPhongMaterial( { color: 0x444444, emissive: 0x333333, side: side,	wireframe: wirefr } )  // 10 grey
-	
-];
+	var materials = [
+		
+		new THREE.MeshBasicMaterial( {
+			opacity: 0.15,	transparent: true, 	
+			side: side, wireframe: wireframe } ),					//  0 transparent
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x440033, emissive: 0x330033, specular: specular,
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  1 color
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xff0000, emissive: 0xff0000, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  2 red
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x00ff00, emissive: 0x00ff00, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  3 green
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x0000ff, emissive: 0x0000ff, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  4 blue
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xffff00, emissive: 0xffff00, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  5 yellow
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0xff00ff, emissive: 0xff00ff, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  6 mgenta
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x00ffff, emissive: 0x00ffff, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  7 cyan
+			
+		new THREE.MeshBasicMaterial( {
+			map: uvTex,			
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  8 uv grid
+			
+		new THREE.MeshBasicMaterial( {
+			map: waterlilyTex,	
+			side: side, wireframe: wireframe, flatShading: flatShading } ),	//  9 photo
+			
+		new THREE.MeshPhongMaterial( {
+			color: 0x444444, emissive: 0x444444, specular: specular, 
+			side: side, wireframe: wireframe, flatShading: flatShading } )	// 10 grey
+		
+	];
 
 var sun1 = new THREE.DirectionalLight( );
 sun1.intensity = 0.6;  
@@ -150,8 +188,12 @@ var parameters = {
 	height: 1,		// default from THREEf / 100 
 	
 	// further parameters of your choice
-	
-	rCircHeight: function ( u, v, t ) { return  1.1 + u * v * v + 0.8 * Math.sin( 0.1 * t ) }, // (only example)
+	radiusSegments: 5,
+	heightSegments: 6,
+	quadLine:	true,
+	quadColor: 0x110011,
+	rCircHeight: function ( u, v, t ) { return  (0.03 * ( t - 50 ) - v ) * (0.02 * ( t - 50 ) - v ) },
+
 		
 }
 
@@ -189,14 +231,30 @@ function outputJavaScript( ) {
 	var fc = geo.faceIndices.length / 3;	
 	var uvc2 = geo.uvs.length;	
 	var out = "";
+	var ffd = Math.pow( 10, nDec.value );
 	
+	function round( x ) {
+	
+		return Math.floor( x * ffd ) / ffd;
+		
+	}
+
 	// --- generate JavaScript code ---
 	
 	output.innerHTML  = " /* t = " + time + " (static timestamp) 	 <br />  	BufferGeometry generated with addon THREEf  <br />	var geo = new THREE.BufferGeometry();  <br /> geo.createMorphGeometry = THREEf.createMorphGeometry; <br /> geo.createMorphGeometry( { ";
 	
 	Object.keys( parameters ).forEach ( function ( val, key ) {
 	
-		output.innerHTML +=  val + ": " + parameters[ val ] + ", ";
+		if( val !== 'quadColor' ) {
+		
+			output.innerHTML +=  val + ": " + parameters[ val ] + ", ";
+		
+		} else {
+			
+			output.innerHTML +=  val + ": 0x" + parameters[ val ].toString(16) + ", ";
+		
+		}
+		
 	
 	} );
 	
@@ -219,7 +277,7 @@ function outputJavaScript( ) {
 	
 	for ( var v = 0; v < vc3 ; v ++ ) {
 		
-		out += geo.vertices[ v ];
+		out += round( geo.vertices[ v ] );
 		out += v < vc3 - 1  ? ", " : "";
 		
 	}
@@ -230,7 +288,7 @@ function outputJavaScript( ) {
 	
 	for ( var v = 0; v < vc3 ; v ++ ) {
 		
-		out += geo.normals[ v ];
+		out +=  round( geo.normals[ v ] );
 		out += v < vc3 - 1  ? ", " : "";
 		
 	}
@@ -241,7 +299,7 @@ function outputJavaScript( ) {
 	
 	for ( var v = 0; v < uvc2 ; v ++ ) {
 		
-		out += geo.uvs[ v ];
+		out +=  round( geo.uvs[ v ] );
 		out += v < uvc2 - 1  ? ", " : "";
 		
 	}
@@ -265,7 +323,8 @@ function outputJavaScript( ) {
 	if ( geo.quadLine ) {
 		
 		out += "geo.lineGeometry = new THREE.BufferGeometry(); <br />";
-		out += "geo.quadLine = new THREE.Line( geo.lineGeometry, new THREE.LineBasicMaterial( { color: " + geo.quadColor + "} ) ); <br />";
+		out += "geo.quadColor = 0x" + geo.quadColor.toString(16) + "; <br />";
+		out += "geo.quadLine = new THREE.Line( geo.lineGeometry, new THREE.LineBasicMaterial( { color: geo.quadColor } ) ); <br />";
 		
 		out += "geo.linePositions = new Float32Array( [ ";
 		
@@ -273,7 +332,7 @@ function outputJavaScript( ) {
 		
 		for ( var v = 0; v < glc; v ++ ) {
 			
-			out += geo.linePositions[ v ];
+			out +=  round( geo.linePositions[ v ] );
 			out += v < glc - 1  ? ", " : "";
 			
 		}
