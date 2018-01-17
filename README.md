@@ -54,8 +54,7 @@ fixedMatBottom,	// fixed given material index (string of digits for faces), over
 
 Additionally there is the tool modifyCreateGeo.html.
 It outputs the elementary BufferGeometry definition for a selected time.
-The output can be easily copied with Ctrl+A and Ctrl+C. There is no further .innerHTML content on the page!
-
+The code is displayed and is also copied to the clipboard.
 ````
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
