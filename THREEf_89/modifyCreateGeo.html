@@ -25,7 +25,6 @@
 
 <body> 
 	
-	<textarea id="code" cols="1" rows="1" style="position: absolute; top: 0px; left: -10px; width: 1px; height: 1px"> </textarea>
 	<button id="export_geo.js">export t=</button>
 	
 	<input type="radio" name="tInput" id="asNumber">
@@ -81,9 +80,10 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 var uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );
 var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );
 //var earth			= new THREE.TextureLoader().load( "earth_nasa_map_900.png" );
+var specular =  0x333333;
 var side =  THREE.DoubleSide;
 var wireframe = false;
-var specular =  0x333333;
+
 var flatShading = true;
 
 	var materials = [
@@ -191,12 +191,11 @@ var parameters = {
 	height: 1,		// default from THREEf / 100 
 	
 	// further parameters of your choice
-	radiusSegments: 5,
-	heightSegments: 6,
+	radiusSegments: 3,
+	heightSegments: 3,
 	quadLine:	true,
 	quadColor: 0x110011,
-	rCircHeight: function ( u, v, t ) { return  (0.03 * ( t - 50 ) - v ) * (0.02 * ( t - 50 ) - v ) },
-
+	rCircHeight: function ( u, v, t ) { return  v > 0.5 ? v - 0.04 * t : v + 0.02 * t },
 
 }
 
@@ -216,8 +215,10 @@ document.getElementById( "export_geo.js" ).onclick = outputJavaScript;
 var time;
 
 String.prototype.replaceAll = function( search, replacement ) {
+
 	var target = this;
 	return target.split( search ).join( replacement );
+	
 };
  
 animate();
@@ -240,6 +241,7 @@ function outputJavaScript( ) {
 	var uvc2 = geo.uvs.length;	
 	var out = "";
 	var ffd = Math.pow( 10, nDec.value );
+	var code;
 	
 	function round( x ) {
 		
@@ -325,9 +327,9 @@ function outputJavaScript( ) {
 		
 	}
 	
-	out += " ]; <br /> ";
+	out += " ]; <br />";
 	
-	out +=  " for ( var f = 0, p = 0; f < " + fc + "; f ++, p += 3 ) { geo.addGroup( geoGrp[ p ], geoGrp[ p + 1 ], geoGrp[ p + 2 ] ); }<br />";
+	out += "for ( var f = 0, p = 0; f < " + fc + "; f ++, p += 3 ) { geo.addGroup( geoGrp[ p ], geoGrp[ p + 1 ], geoGrp[ p + 2 ] ); }<br />";
 	
 	if ( geo.quadLine ) {
 		
@@ -350,13 +352,16 @@ function outputJavaScript( ) {
 		
 		out += "geo.lineGeometry.addAttribute( 'position', new THREE.BufferAttribute( geo.linePositions, 3 ) );<br />";
 		
-	}
+	}	
 	
 	output.innerHTML += out;
-	code.value = "";
-	code.value = output.innerHTML.replaceAll('<br>', '\r\n');
-	document.getElementById("code").select();
-	document.execCommand("Copy");
+	
+	code = document.createElement( "textarea" );
+	code.value = output.innerHTML.replaceAll( '<br>', '\r\n' ).replaceAll( '&lt;', '<' ).replaceAll( '&gt;', '>' );
+	document.body.appendChild( code );
+	code.select();
+	document.execCommand( "Copy" );
+	document.body.removeChild( code );
 	
 }
 
