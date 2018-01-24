@@ -51,10 +51,14 @@ _89 now contains
 fixedMatTop,	// fixed given material index (string of digits for faces), overrides materialTop values
 fixedMatBottom,	// fixed given material index (string of digits for faces), overrides materialBottom values
 
-Additionally there is the tool modifyCreateGeo.html.
+Additionally there are the tools
+- modifyCreateGeo.html
 It outputs the elementary BufferGeometry definition for a selected time.
 The code is displayed and is also copied to the clipboard.
-
+- modifyGeo.html
+This allows you to modify the geometry created with the previous tool. You can do this with the mouse or with inputs.
+It requires a workaround (from mugen87) of three.js r89 for raycast with multimaterial! Take three.89.mugen.js.
+The indexed buffer geometry **geo** to be manipulated must be defined in the file geo.js, see example.
 ````
 -----------------------------------------------------------------------------------------------------------------
 **Example:**
