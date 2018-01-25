@@ -1,5 +1,5 @@
 # THREEf.js
-THREE.js addon, to produce almost infinite many time-varying Geometries and BufferGeometries with functions
+three.js addon, to produce almost infinite many time-varying Geometries and BufferGeometries with functions
 
 //
 
@@ -15,9 +15,9 @@ Produce almost infinite many time-varying Geometries or BufferGeometries with on
 
 ```javascript
 
-geometry = new THREE.Geometry();    // base class geometry object from THREE.js
+geometry = new THREE.Geometry();    // base class geometry object from three.js
 // or 
-geometry = new THREE.BufferGeometry();    // base class buffer-geometry object from THREE.js
+geometry = new THREE.BufferGeometry();    // base class buffer-geometry object from three.js
 
 geometry.createMorphGeometry = THREEf.createMorphGeometry;    // insert the methode from THREEf.js
 
