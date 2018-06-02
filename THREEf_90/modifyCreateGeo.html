@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--   *** create to modify  ***
-	(for THREEf created buffer geometries)
+	(for THREEf created indexed or non indexed buffer geometries)
 /**
  * @author hofk / http://threejs.hofk.de/
 */
@@ -54,19 +54,13 @@
 </body>
 
 <script>
-
 'use strict'
-
 var tNumber = document.getElementById( "tNumber" );
 var tRange = document.getElementById( "tRange" );
 var btnWireframe = document.getElementById( "wirefr" );
-
 var scene = new THREE.Scene();
-
 var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 2000 );
-
 camera.position.set( 0, 1, 3 ); // possibly change if geometry is much larger than 1
-
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( 0xf1f1f1, 1 );
@@ -75,7 +69,6 @@ container.appendChild( renderer.domElement );
 THREEx.WindowResize( renderer, camera );
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 //controls.enableZoom = true;
-
 // material
 var uvTex			= new THREE.TextureLoader().load( "uvgrid01.png" );
 var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );
@@ -83,9 +76,7 @@ var waterlilyTex	= new THREE.TextureLoader().load( "waterlily.png" );
 var specular =  0x333333;
 var side =  THREE.DoubleSide;
 var wireframe = false;
-
 var flatShading = true;
-
 	var materials = [
 		
 		new THREE.MeshBasicMaterial( {
@@ -133,7 +124,6 @@ var flatShading = true;
 			side: side, wireframe: wireframe, flatShading: flatShading } )	// 10 grey
 		
 	];
-
 var sun1 = new THREE.DirectionalLight( );
 sun1.intensity = 0.6;
 sun1.position.set(5, 20, 30 );
@@ -142,7 +132,6 @@ var sun2 = new THREE.DirectionalLight( );
 sun2.intensity = 0.5;  
 sun2.position.set( -5, -20, 30 );
 scene.add( sun2 );
-
 //aviable parameters
 /*
 indexed: false,
@@ -181,63 +170,49 @@ fixedMaterial: [],
 centerPoints:	[ [ .6, 0, 0 ], [ .5, 0, 0 ], [ .4, 0, 0 ],[ .3, 0, 0 ], [ .2, 0, 0 ],[ .1, .01, 0 ], [ .02, .07, 0 ], [ 0, .1 , 0], [ .02, .13, 0], [ .1, .21, 0],  [ .2, .28, 0], [ .3, .35 , 0], [ .4, .42 , 0], [ .5, .5 , 0],[ 0.58, .6 , 0 ],[ .6, .7, 0 ], [ .58, .8, 0 ], [ .51, .9, 0], [ .44, .95, 0], [ .38, .98, 0], [ .3, 1, 0 ],[ .2, .99, 0 ], [ .1, .94, 0 ], [ 0, 0.88, 0 ] ], // (only example)
  
 */
-
 // create a THREEf BufferGeometry with your parameters
-
 var parameters = {
-
 	// take, if possible approximate (or change the camera position at the top)
 	radius: 0.16,	// default from THREEf / 100
 	height: 1,		// default from THREEf / 100 
 	
 	// further parameters of your choice
+	indexed: false, // or take indexed: true (is also default)
 	radiusSegments: 3,
 	heightSegments: 3,
-	quadLine:	true,
+	quadLine: true,
 	quadColor: 0x110011,
 	rCircHeight: function ( u, v, t ) { return  v > 0.5 ? v - 0.04 * t : v + 0.02 * t },
-
 }
-
 var geo = new THREE.BufferGeometry();
 geo.createMorphGeometry = THREEf.createMorphGeometry;
 geo.createMorphGeometry( parameters );
-
 // mesh
 var mesh = new THREE.Mesh( geo, materials );
 scene.add( mesh );
-
 if ( parameters.quadLine ) mesh.add( geo.quadLine );
-
 btnWireframe.onclick = showWireframe;
 document.getElementById( "export_geo.js" ).onclick = outputJavaScript;
-
 var time;
-
 String.prototype.replaceAll = function( search, replacement ) {
-
 	var target = this;
 	return target.split( search ).join( replacement );
 	
 };
  
 animate();
-
 //.........................
-
 function showWireframe( ) {
-
 	wireframe = !wireframe;
 	btnWireframe.innerHTML = wireframe ? "no wirefr." : "wireframe";
 	for ( var m = 0; m < materials.length; m ++ ) materials[ m ].wireframe = wireframe;
 	
 }
-
 function outputJavaScript( ) {
 	
-	var vc3 = geo.vertices.length;
-	var fic = geo.faceIndices.length;
-	var fc = geo.faceIndices.length / 3;
+	var gc3 = geo.indexed ? geo.vertices.length : geo.positions.length;
+	var fic = geo.indexed ? geo.faceIndices.length : null;
+	var fc  = geo.indexed ? geo.faceIndices.length / 3 : geo.positions.length / 9;
 	var uvc2 = geo.uvs.length;	
 	var out = "";
 	var ffd = Math.pow( 10, nDec.value );
@@ -248,10 +223,9 @@ function outputJavaScript( ) {
 		return Math.floor( x * ffd ) / ffd;
 		
 	}
-
 	// --- generate JavaScript code ---
-	
-	output.innerHTML  = "/* t = " + time + " (static timestamp)<br />BufferGeometry generated with addon THREEf<br />var geo = new THREE.BufferGeometry();<br />geo.createMorphGeometry = THREEf.createMorphGeometry;<br />geo.createMorphGeometry( { ";
+	var indextype = geo.indexed ? "indexed" : "non indexed";
+	output.innerHTML  = "/* t = " + time + " (static timestamp)<br />" + indextype + " BufferGeometry generated with addon THREEf<br />var geo = new THREE.BufferGeometry();<br />geo.createMorphGeometry = THREEf.createMorphGeometry;<br />geo.createMorphGeometry( { ";
 	
 	Object.keys( parameters ).forEach ( function ( val, key ) {
 	
@@ -272,34 +246,47 @@ function outputJavaScript( ) {
 	
 	out += "var geo = new THREE.BufferGeometry();<br />";
 	
-	out += "geo.faceIndices = new Uint32Array( [ ";
+	out +=  geo.indexed ? "geo.faceIndices = new Uint32Array( [ " : "geo.positions = new Float32Array( [ ";
 	
-	for ( var i = 0; i < fic; i ++ ) {
-		
-		out += geo.faceIndices[ i ];
-		out += i < fic - 1  ? ", " : "";
-		
-	}
+	if ( geo.indexed ) {
 	
-	out += " ] );<br />";
-	
-	out += "geo.vertices = new Float32Array( [ ";
-	
-	for ( var v = 0; v < vc3 ; v ++ ) {
+		for ( var i = 0; i < fic; i ++ ) {
+			
+			out += geo.faceIndices[ i ];
+			out += i < fic - 1  ? ", " : "";
+			
+		}
 		
-		out += round( geo.vertices[ v ] );
-		out += v < vc3 - 1  ? ", " : "";
+		out += " ] );<br />";
 		
+		out += "geo.vertices = new Float32Array( [ ";
+		
+		for ( var v = 0; v < gc3 ; v ++ ) {
+			
+			out += round( geo.vertices[ v ] );
+			out += v < gc3 - 1  ? ", " : "";
+			
+		}
+		
+	} else {	// non indexed
+		
+		for ( var p = 0; p < gc3 ; p ++ ) {
+			
+			out += round( geo.positions[ p ] );
+			out += p < gc3 - 1  ? ", " : "";
+			
+		}
+	
 	}
 	
 	out += " ] );<br />";
 	
 	out += "geo.normals = new Float32Array( [ ";
 	
-	for ( var v = 0; v < vc3 ; v ++ ) {
+	for ( var v = 0; v < gc3 ; v ++ ) {
 		
 		out +=  round( geo.normals[ v ] );
-		out += v < vc3 - 1  ? ", " : "";
+		out += v < gc3 - 1  ? ", " : "";
 		
 	}
 	
@@ -316,7 +303,15 @@ function outputJavaScript( ) {
 	
 	out += " ] );<br />"
 	
-	out += "geo.setIndex( new THREE.BufferAttribute( geo.faceIndices, 1 ) );<br />geo.addAttribute( 'position', new THREE.BufferAttribute( geo.vertices, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'normal', new THREE.BufferAttribute( geo.normals, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'uv', new THREE.BufferAttribute( geo.uvs, 2 ) );<br />";
+	if ( geo.indexed ) {
+		
+		out += "geo.setIndex( new THREE.BufferAttribute( geo.faceIndices, 1 ) );<br />geo.addAttribute( 'position', new THREE.BufferAttribute( geo.vertices, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'normal', new THREE.BufferAttribute( geo.normals, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'uv', new THREE.BufferAttribute( geo.uvs, 2 ) );<br />";
+	
+	} else { // non indexed
+		
+		out += "geo.addAttribute( 'position', new THREE.BufferAttribute( geo.positions, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'normal', new THREE.BufferAttribute( geo.normals, 3 ).setDynamic( true ) );<br />geo.addAttribute( 'uv', new THREE.BufferAttribute( geo.uvs, 2 ) );<br />";
+		
+	}
 	
 	out += "var geoGrp = [ ";
 	
@@ -364,9 +359,8 @@ function outputJavaScript( ) {
 	document.body.removeChild( code );
 	
 }
-
 function animate() {
-
+	
 	requestAnimationFrame( animate );
 	
 	if ( asNumber.checked ) {
@@ -374,7 +368,7 @@ function animate() {
 		time = tNumber.value;
 		tRange.value = time;
 	}
-		
+	
 	if ( asRange.checked ) {
 		
 		time = tRange.value;
@@ -388,7 +382,6 @@ function animate() {
 	controls.update();
 	
 }
-
 </script>
 
 </html>
