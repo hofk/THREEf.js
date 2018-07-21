@@ -54,6 +54,12 @@ explodemode,	// 'center','normal'
 
 ````
 -----------------------------------------------------------------------------------------------------------------
+
+Note:
+From revision 94 modifyGeo.html  no longer needs a workaround of three.js
+ Multimaterial raycast is now supported in the core of three.js.
+
+-------------------------------------------------------------------------------------------------------------------
 **Example:**
 
 ```javascript
