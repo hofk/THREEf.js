@@ -1,6 +1,8 @@
 # THREEf.js
 three.js addon, to produce almost infinite many time-varying Geometries and BufferGeometries with functions
+
 *License identical to three.js*
+
 //
   @author hofk / http://sandbox.threejs.hofk.de/
 //
