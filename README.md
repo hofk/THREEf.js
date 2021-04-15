@@ -11,8 +11,8 @@ Produce almost infinite many time-varying Geometries or BufferGeometries with on
 
 ```javascript
 
-geometry = new THREE.Geometry();    // base class geometry object from THREE.js
-// or 
+( geometry = new THREE.Geometry();    // base class geometry object from THREE.js Only up to revision 124, remove afterwards! )
+// or better
 geometry = new THREE.BufferGeometry();    // base class buffer-geometry object from THREE.js
 
 geometry.createMorphGeometry = THREEf.createMorphGeometry;    // insert the methode from THREEf.js
