@@ -61,7 +61,7 @@ Note:
 From revision 95 modifyGeo.html  no longer needs a workaround of three.js
  Multimaterial raycast is now supported in the core of three.js. (r94 still has a bug)
  
-Replace from revision 110 .addAttribute with .setAttribute.
+As of three.js revision 125, the old geometry is no longer available.
 
 -------------------------------------------------------------------------------------------------------------------
 **Example:**
