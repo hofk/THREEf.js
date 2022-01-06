@@ -2,7 +2,7 @@
 THREE.js addon, to produce almost infinite many time-varying Geometries and BufferGeometries with functions
 
 //
-  @author hofk / http://sandbox.threejs.hofk.de/
+  @author hofk / https://hofk.de/main/threejs/sandbox/
 //
 
  #####  * Inspired by https://threejs.org/examples/js/ParametricGeometries.js ( @author zz85 )*
