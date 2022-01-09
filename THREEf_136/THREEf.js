@@ -1768,66 +1768,34 @@ function morphVertices( time ) {
 					
 				}
 				
-				if ( i === 0 ) {
-					
-					// first binormal
-
-					bX = 1;
-					bY = tY !== 0 ? 0.000101 : -0.999989;
-					bZ = 0;
-					
-				}
-				
-				/* If there are problems with the first binormal in an example, try one of the following variants.
-				
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = tX;
-					bY = -( tX * tX + tZ * tZ ) / tY;
-					bZ = tZ;
-					
-					//...............................
-						
-					// prevents division by zero
-					tZ = ( tZ < 0 ) ? ( ( tZ > -0.0000001 ) ? -0.0000001 : tZ ) : ( ( tZ < 0.0000001 ) ? 0.0000001 : tZ );		
-					
-					bX = 1;
-					bY = ( tY * tY - tX ) / tZ;
-					bZ = tZ;
-					
-					//...............................
-									
-					bX = tZ;
-					bY = 0;
-					bZ = -tX;
-					
-					//...............................
-					
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = 1;
-					bY = -tX / tY ;
-					bZ = 0;
-					
-					//...............................
-					
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = 1;
-					bY = tY < 0 ? ( tX < 0 ? tX / tY  :  -tX / tY ) : ( tX < 0 ? -tX / tY : tX / tY );
-					bZ = 0;
-					
-					//...............................
-																
-					bX = tY !== 0 ? 1 : 0;
-					bY = tY !== 0 ? -tX / tY : 1;
-					bZ = 0;	
-					
-				*/
-				
+				if ( i === 0 ) {  // first binormal 
+                    
+                    // see  http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
+                    
+                    // normalize tangent
+                    
+                    lenV = Math.sqrt( tX * tX + tY * tY + tZ * tZ );
+                    
+                    tX = tX / lenV;
+                    tY = tY / lenV;
+                    tZ = tZ / lenV;
+                    
+                    const k = ( Math.abs( tX ) + 0.5 ) % 1; // fract
+                    
+                    bX = -tY;
+                    bY = tX - k * tZ;
+                    bZ = k * tY;
+                    
+                    // normalize binormal
+                    
+                    lenV = Math.sqrt( bX * bX + bY * bY + bZ * bZ );
+                    
+                    bX = bX / lenV;
+                    bY = bY / lenV;
+                    bZ = bZ / lenV;
+                    
+                }
+                
 				// cross product b, t calculates the normal ( if i > 0  binormal from last segment )
 				// see http://www.cs.cmu.edu/afs/andrew/scs/cs/15-462/web/old/asst2camera.html
 				
