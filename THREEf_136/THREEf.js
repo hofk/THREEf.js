@@ -1769,32 +1769,32 @@ function morphVertices( time ) {
 				}
 				
 				if ( i === 0 ) {  // first binormal 
-                    
-                    // see  http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
-                    
-                    // normalize tangent
-                    
-                    lenV = Math.sqrt( tX * tX + tY * tY + tZ * tZ );
-                    
-                    tX = tX / lenV;
-                    tY = tY / lenV;
-                    tZ = tZ / lenV;
-                    
-                    const k = ( Math.abs( tX ) + 0.5 ) % 1; // fract
-                    
-                    bX = -tY;
-                    bY = tX - k * tZ;
-                    bZ = k * tY;
-                    
-                    // normalize binormal
-                    
-                    lenV = Math.sqrt( bX * bX + bY * bY + bZ * bZ );
-                    
-                    bX = bX / lenV;
-                    bY = bY / lenV;
-                    bZ = bZ / lenV;
-                    
-                }
+					
+					// see  http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
+					
+					// normalize tangent
+					
+					lenV = Math.sqrt( tX * tX + tY * tY + tZ * tZ );
+					
+					tX = tX / lenV;
+					tY = tY / lenV;
+					tZ = tZ / lenV;
+					
+					const k = ( Math.abs( tX ) + 0.5 ) % 1; // fract
+					
+					bX = -tY;
+					bY = tX - k * tZ;
+					bZ = k * tY;
+					
+					// normalize binormal
+					
+					lenV = Math.sqrt( bX * bX + bY * bY + bZ * bZ );
+					
+					bX = bX / lenV;
+					bY = bY / lenV;
+					bZ = bZ / lenV;
+					
+				}
                 
 				// cross product b, t calculates the normal ( if i > 0  binormal from last segment )
 				// see http://www.cs.cmu.edu/afs/andrew/scs/cs/15-462/web/old/asst2camera.html
