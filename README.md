@@ -9,7 +9,7 @@ three.js addon, to produce almost infinite many time-varying Geometries and Buff
 
    * Inspired by https://threejs.org/examples/js/ParametricGeometries.js ( @author zz85 )*  <<< old link, no longer available, see revision 100
 
-Produce almost infinite many time-varying Geometries or BufferGeometries with only 15 properties, 19 functions and 2 arrays:
+Produce almost infinite many time-varying Geometries( up to three.js r124 ) or BufferGeometries with only 15 properties, 19 functions and 2 arrays:
 
 ```javascript
 
