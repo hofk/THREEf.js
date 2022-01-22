@@ -74,7 +74,7 @@ p = {
   }
   
 */
-    if ( p === undefined ) p = {};
+	if ( p === undefined ) p = {};
 	
 	g = this;  // this is a  THREE.BufferGeometry() - the base geometry objects from THREE.js
 	
@@ -193,13 +193,13 @@ function create() {
 	var uX, uX1;	
 	var uZ, uZ1;
 	var topOffset;
-    
+	
 	var a;					// vertices (index)
 	var b1, b2, b3, b4;
 	var c1, c2, c3, c4;	
 
 	if ( g.indexed ) {
-    
+	
 		var vIdx;				// vertex index
 		var waffleVidx; 		// waffle vertex index	
 		var circVertexCount = g.circOpen ? rss : rs;
@@ -262,7 +262,7 @@ function create() {
 					b2 = hvc * ( j + 1 ) + 1 + i;	// left-top
 					c2 = hvc * j + 1 + i;
 					
-					g.faceIndices[ idxCount     ] = a; // right-bottom
+					g.faceIndices[ idxCount	 ] = a; // right-bottom
 					g.faceIndices[ idxCount + 1 ] = b1;
 					g.faceIndices[ idxCount + 2 ] = c1; 
 					
@@ -931,7 +931,7 @@ function create() {
 	}
 	
 	if ( !g.indexed ) {
-    
+	
 		var fLeft;				// face left (index)
 		var fLeftPos;
 		var fRight;				// face right (index)
@@ -1730,7 +1730,7 @@ function morphVertices( time ) {
 				
 				x 	= xC  +  r * Math.cos( angle )	+ g.radius * g.moveX( nj, ni, t );
 				y	= g.height * scalingHeight		+ g.height * g.moveY( nj, ni, t ) - halfH;
-				z	=	    -r * Math.sin( angle )	+ g.radius * g.moveZ( nj, ni, t );
+				z	=		-r * Math.sin( angle )	+ g.radius * g.moveZ( nj, ni, t );
 				
 			} else {
 				
@@ -1768,65 +1768,33 @@ function morphVertices( time ) {
 					
 				}
 				
-				if ( i === 0 ) {
+				if ( i === 0 ) {  // first binormal 
 					
-					// first binormal
-
-					bX = 1;
-					bY = tY !== 0 ? 0.000101 : -0.999989;
-					bZ = 0;
+					// see  http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
+					
+					// normalize tangent
+					
+					lenV = Math.sqrt( tX * tX + tY * tY + tZ * tZ );
+					
+					tX = tX / lenV;
+					tY = tY / lenV;
+					tZ = tZ / lenV;
+					
+					const k = ( Math.abs( tX ) + 0.5 ) % 1; // fract
+					
+					bX = -tY;
+					bY = tX - k * tZ;
+					bZ = k * tY;
+					
+					// normalize binormal
+					
+					lenV = Math.sqrt( bX * bX + bY * bY + bZ * bZ );
+					
+					bX = bX / lenV;
+					bY = bY / lenV;
+					bZ = bZ / lenV;
 					
 				}
-				
-				/* If there are problems with the first binormal in an example, try one of the following variants.
-				
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = tX;
-					bY = -( tX * tX + tZ * tZ ) / tY;
-					bZ = tZ;
-					
-					//...............................
-						
-					// prevents division by zero
-					tZ = ( tZ < 0 ) ? ( ( tZ > -0.0000001 ) ? -0.0000001 : tZ ) : ( ( tZ < 0.0000001 ) ? 0.0000001 : tZ );		
-					
-					bX = 1;
-					bY = ( tY * tY - tX ) / tZ;
-					bZ = tZ;
-					
-					//...............................
-									
-					bX = tZ;
-					bY = 0;
-					bZ = -tX;
-					
-					//...............................
-					
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = 1;
-					bY = -tX / tY ;
-					bZ = 0;
-					
-					//...............................
-					
-					// prevents division by zero
-					tY = ( tY < 0 ) ? ( ( tY > -0.0000001 ) ? -0.0000001 : tY ) : ( ( tY < 0.0000001 ) ? 0.0000001 : tY );
-					
-					bX = 1;
-					bY = tY < 0 ? ( tX < 0 ? tX / tY  :  -tX / tY ) : ( tX < 0 ? -tX / tY : tX / tY );
-					bZ = 0;
-					
-					//...............................
-																
-					bX = tY !== 0 ? 1 : 0;
-					bY = tY !== 0 ? -tX / tY : 1;
-					bZ = 0;	
-					
-				*/
 				
 				// cross product b, t calculates the normal ( if i > 0  binormal from last segment )
 				// see http://www.cs.cmu.edu/afs/andrew/scs/cs/15-462/web/old/asst2camera.html
@@ -1911,7 +1879,7 @@ function morphVertices( time ) {
 	}
 	
 	if ( g.indexed ) {
-    
+	
 		var leftBtmVec = {}; 
 		var leftTopVec = {};
 		var rightBtmVec = {};
@@ -2332,7 +2300,7 @@ function morphVertices( time ) {
 	}
 	
 	if ( !g.indexed ) {
-    
+	
 		// const a = 0; //  position index offset, triangle corners a, b, c
 		const b = 3;
 		const c = 6;
@@ -3256,14 +3224,14 @@ function vertexFaceNumbersHelper( mesh, mode, size, color ) {
 			}
 			
 		}
-					
+		 
 	}
 	
 	// non indexed BufferGeometry
 	
 	//if ( mesh.geometry.isBufferGeometry && !mesh.geometry.indexed) { 
 	if ( !mesh.geometry.indexed) { 
-    
+	
 		if ( mode === 1 || mode === 3 ) {
 				
 			verticesCount = mesh.geometry.vertexPositions.length;
